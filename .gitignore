@@ -36,6 +36,9 @@ temp_*
 # ML engine output (annotated videos)
 ml-engine/output/
 
+# Label Studio upload helper copies
+ml-engine/datasets/clubhead/upload_batches/
+
 # Clubhead annotate artifacts (regenerate via scripts)
 ml-engine/datasets/clubhead/roboflow_upload_to_label.zip
 ml-engine/datasets/clubhead/_bootstrap_bak/

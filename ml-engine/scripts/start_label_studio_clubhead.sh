@@ -9,27 +9,22 @@ if [[ ! -x "$PYTHON" ]]; then
   PYTHON="$(command -v python3)"
 fi
 
-"$PYTHON" scripts/prepare_label_studio_tasks.py --skip-labeled
-
 export LABEL_STUDIO_LOCAL_FILES_SERVING_ENABLED=true
 export LABEL_STUDIO_LOCAL_FILES_DOCUMENT_ROOT="${ROOT}/datasets/clubhead"
 
 echo ""
 echo "=== Clubhead Label Studio ==="
-echo "1) Install once (separate env recommended — Label Studio is heavy):"
-echo "     pipx install label-studio"
-echo "   or: python3 -m pip install --user label-studio"
+echo "1) Install once: pipx install label-studio"
 echo ""
-echo "2) Start:"
-echo "     label-studio start --host 127.0.0.1 --port 8080"
-echo ""
-echo "3) Create project → Settings → Labeling Interface → Code → paste:"
+echo "2) Create project → Settings → Labeling Interface → paste:"
 echo "     ${ROOT}/datasets/clubhead/label_studio_config.xml"
 echo ""
-echo "4) Import tasks:"
-echo "     ${ROOT}/datasets/clubhead/label_studio_tasks.json"
+echo "3) Import IMAGES (not JSON):"
+echo "     ${ROOT}/datasets/clubhead/to_label/*.jpg"
+echo "   Do NOT import label_studio_tasks.json — /data/local-files/ returns 404"
+echo "   unless Cloud Storage is enabled in Label Studio settings."
 echo ""
-echo "5) After labeling: Export → JSON, then:"
+echo "4) After labeling: Export → JSON, then:"
 echo "     cd ${ROOT}"
 echo "     ./venv/bin/python scripts/import_label_studio_export.py ~/Downloads/project-*.json"
 echo "     ./venv/bin/python scripts/split_club_labels.py"

@@ -160,12 +160,29 @@ Buat akun lokal jika diminta (hanya di mesinmu).
 
 Config itu satu class: `clubhead`, kotak persegi di atas gambar.
 
-### C.4 Import gambar
+### C.4 Import gambar (penting — jangan pakai JSON tasks)
 
-1. **Import**
-2. Pilih file: `datasets/clubhead/label_studio_tasks.json`
-3. Pastikan jumlah task = jumlah JPG yang belum dilabel
-4. Buka satu task: foto harus tampil. Jika rusak / 404, hentikan Label Studio, cek ulang `DOCUMENT_ROOT`, start lagi.
+`label_studio_tasks.json` memakai URL `/data/local-files/…`. Di banyak instalasi Label Studio (termasuk pipx) endpoint itu **404**, jadi foto tidak tampil.
+
+**Cara yang benar:** upload JPG, bukan file JSON. Label Studio membatasi jumlah file per upload (`DATA_UPLOAD_MAX_NUMBER_FILES`, sering ~100). 183 file sekaligus akan error.
+
+Bagi dulu jadi batch 50:
+
+```bash
+cd ml-engine
+./venv/bin/python scripts/split_to_label_upload_batches.py
+```
+
+Folder hasil: `datasets/clubhead/upload_batches/batch_01` … `batch_04`.
+
+1. Di project → **Import** → **Upload Files**
+2. Buka `upload_batches/batch_01`, Ctrl+A, Open
+3. Ulangi untuk `batch_02`, `batch_03`, `batch_04` (satu batch per import)
+4. Buka satu task — foto harus tampil
+
+Jangan import `label_studio_tasks.json`. Kalau sudah terlanjur: **Data Manager** → select all → **Delete tasks**, lalu import JPG seperti di atas.
+
+Export JSON tetap bisa: script import YOLO membaca nama file dari URL (`golf_swing_front_f000690.jpg`), baik dari upload maupun local-files.
 
 
 
