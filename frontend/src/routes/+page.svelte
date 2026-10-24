@@ -32,26 +32,6 @@
 				</div>
 			</div>
 
-			<div class="min-w-0 lg:col-span-5">
-				<div class="card border-border/80 bg-graphite/90 backdrop-blur-[2px]">
-				<p class="label mb-6">Yang Diukur</p>
-				<div class="space-y-5">
-					{#each [
-						{ label: 'Swing Tempo' },
-						{ label: 'Postur' },
-						{ label: 'Rotasi' },
-						{ label: 'Keseimbangan' }
-					] as metric}
-						<div class="flex items-baseline justify-between gap-4 border-b border-border pb-4 last:border-0 last:pb-0">
-							<span class="text-xs font-medium uppercase tracking-wide text-muted">
-								{metric.label}
-							</span>
-							<span class="shrink-0 font-display text-sm font-semibold text-disabled">—</span>
-						</div>
-					{/each}
-				</div>
-				</div>
-			</div>
 		</div>
 	</div>
 </section>
