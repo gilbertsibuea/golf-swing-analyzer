@@ -9,6 +9,4 @@ scripts
 video
 *.md
 .git
-# Weights are mounted at runtime via compose (keep image smaller)
-# If you prefer baking them in: remove these lines and COPY .pt in Dockerfile
-yolov8n*.pt
+# Keep yolov8n*.pt in the image (do NOT ignore them)

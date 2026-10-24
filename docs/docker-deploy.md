@@ -19,19 +19,25 @@ Browser → `http://YOUR_VPS/` → nginx
 - At least **4 GB RAM** recommended (YOLO + OpenCV on CPU)
 - Copy YOLO weights onto the VPS (they are gitignored)
 
-## 2. Copy project + weights
+## 2. Copy project + weights onto the VPS
+
+Weights are **baked into the ML image at build time** (not bind-mounted). They must be real files under `ml-engine/` before `docker compose build`.
 
 ```bash
-# On your laptop (example)
+# Laptop → VPS
 rsync -avz --exclude node_modules --exclude venv --exclude .git \
   ./golf-swing-analyzer/ user@YOUR_VPS:~/golf-swing-analyzer/
 
-# Weights (required for pose; club optional but recommended)
-scp ml-engine/yolov8n-pose.pt user@YOUR_VPS:~/golf-swing-analyzer/ml-engine/
-scp ml-engine/yolov8n-club.pt user@YOUR_VPS:~/golf-swing-analyzer/ml-engine/
+scp ml-engine/yolov8n-pose.pt ml-engine/yolov8n-club.pt \
+  user@YOUR_VPS:~/golf-swing-analyzer/ml-engine/
 ```
 
-If `yolov8n-pose.pt` is missing, Ultralytics may download it on first start (needs outbound HTTPS).
+On the VPS, confirm they are files (not directories):
+
+```bash
+ls -lh ml-engine/*.pt
+file ml-engine/yolov8n-pose.pt   # should mention Zip/data, NOT "directory"
+```
 
 ## 3. Configure
 

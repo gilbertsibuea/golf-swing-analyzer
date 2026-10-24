@@ -6,19 +6,14 @@ services:
     image: golf-swing-ml:latest
     restart: unless-stopped
     volumes:
+      # Only persist annotated videos — weights are baked into the image at build time
       - ml_output:/app/output
-      # IMPORTANT: these host files MUST exist before `compose up`.
-      # If missing, Docker creates empty directories and the container crashes.
-      - ./ml-engine/yolov8n-pose.pt:/app/yolov8n-pose.pt:ro
-      - ./ml-engine/yolov8n-club.pt:/app/yolov8n-club.pt:ro
     environment:
       - PYTHONUNBUFFERED=1
       - OMP_NUM_THREADS=1
       - MKL_NUM_THREADS=1
-    # Give small VPS RAM headroom (adjust if you have more)
     mem_limit: 3g
     healthcheck:
-      # /health is available as soon as uvicorn starts (model loads in background)
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
       interval: 15s
       timeout: 5s

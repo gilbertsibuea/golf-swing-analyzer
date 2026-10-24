@@ -23,8 +23,15 @@ RUN pip install --upgrade pip \
 
 COPY . .
 
+# Fail the build early if pose weights were not present in the build context
 RUN mkdir -p /app/output \
-    && chmod +x /app/docker-entrypoint.sh
+    && chmod +x /app/docker-entrypoint.sh \
+    && if [ ! -f /app/yolov8n-pose.pt ]; then \
+         echo "ERROR: ml-engine/yolov8n-pose.pt missing at build time."; \
+         echo "Copy the file into ml-engine/ before: docker compose build"; \
+         exit 1; \
+       fi \
+    && ls -lh /app/yolov8n*.pt
 
 EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
