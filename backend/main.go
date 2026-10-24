@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -16,22 +17,30 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/proxy"
 )
 
-const (
-	serverPort    = ":3000"
-	mlEngineURL   = "http://127.0.0.1:8000/analyze-swing"
-	mlEngineBase  = "http://127.0.0.1:8000"
-	tempDir     = "."
-	tempPrefix  = "temp_swing_"
-)
+func getenv(key, fallback string) string {
+	if v := os.Getenv(key); v != "" {
+		return v
+	}
+	return fallback
+}
 
 func main() {
+	port := getenv("PORT", "3000")
+	mlEngineBase := strings.TrimRight(getenv("ML_ENGINE_URL", "http://127.0.0.1:8000"), "/")
+	mlEngineAnalyze := mlEngineBase + "/analyze-swing"
+	corsOrigins := getenv(
+		"CORS_ORIGINS",
+		"http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1",
+	)
+	tempDir := getenv("TEMP_DIR", ".")
+
 	app := fiber.New(fiber.Config{
 		BodyLimit: 100 * 1024 * 1024,
 	})
 
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5173,http://127.0.0.1:5173",
+		AllowOrigins: corsOrigins,
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
@@ -39,7 +48,9 @@ func main() {
 		return c.JSON(fiber.Map{"status": "ok"})
 	})
 
-	app.Post("/upload-swing", handleUploadSwing)
+	app.Post("/upload-swing", func(c *fiber.Ctx) error {
+		return handleUploadSwing(c, mlEngineAnalyze, tempDir)
+	})
 
 	// Proxy annotated analysis videos from ML engine
 	app.Get("/outputs/*", func(c *fiber.Ctx) error {
@@ -47,11 +58,11 @@ func main() {
 		return proxy.Do(c, mlEngineBase+"/outputs/"+path)
 	})
 
-	log.Printf("Go backend listening on %s", serverPort)
-	log.Fatal(app.Listen(serverPort))
+	log.Printf("Go backend listening on :%s (ML=%s)", port, mlEngineBase)
+	log.Fatal(app.Listen(":" + port))
 }
 
-func handleUploadSwing(c *fiber.Ctx) error {
+func handleUploadSwing(c *fiber.Ctx, mlEngineURL, tempDir string) error {
 	fileHeader, err := c.FormFile("video")
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -75,7 +86,7 @@ func handleUploadSwing(c *fiber.Ctx) error {
 		ext = ".mp4"
 	}
 
-	tmpFile, err := os.CreateTemp(tempDir, tempPrefix+"*"+ext)
+	tmpFile, err := os.CreateTemp(tempDir, "temp_swing_*"+ext)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": fmt.Sprintf("failed to create temp file: %v", err),

@@ -1,0 +1,5 @@
+golf-app
+main
+*.exe
+.git
+*.md

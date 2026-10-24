@@ -1,0 +1,14 @@
+venv
+__pycache__
+**/__pycache__
+*.pyc
+output
+datasets
+runs
+scripts
+video
+*.md
+.git
+# Weights are mounted at runtime via compose (keep image smaller)
+# If you prefer baking them in: remove these lines and COPY .pt in Dockerfile
+yolov8n*.pt

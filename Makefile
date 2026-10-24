@@ -1,4 +1,4 @@
-.PHONY: setup dev dev-frontend clean
+.PHONY: setup dev dev-frontend clean docker-up docker-down docker-logs docker-build
 
 # Paths
 BACKEND_DIR := backend
@@ -86,3 +86,21 @@ clean:
 	@fuser -k 8000/tcp 2>/dev/null || true
 	@fuser -k 5173/tcp 2>/dev/null || true
 	@echo "==> Clean complete."
+
+## docker-build: Build all images
+docker-build:
+	docker compose build
+
+## docker-up: Build and start the full stack (nginx :80)
+docker-up:
+	@test -f $(ML_DIR)/yolov8n-pose.pt || echo "WARN: missing $(ML_DIR)/yolov8n-pose.pt — mount may fail; Ultralytics may download on start"
+	docker compose up -d --build
+	@echo "==> Stack up. Open http://localhost:$${HTTP_PORT:-80}"
+
+## docker-down: Stop containers
+docker-down:
+	docker compose down
+
+## docker-logs: Tail logs
+docker-logs:
+	docker compose logs -f

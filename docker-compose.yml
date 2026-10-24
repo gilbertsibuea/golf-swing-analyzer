@@ -1,0 +1,63 @@
+services:
+  ml-engine:
+    build:
+      context: ./ml-engine
+      dockerfile: Dockerfile
+    image: golf-swing-ml:latest
+    restart: unless-stopped
+    volumes:
+      - ml_output:/app/output
+      # Bind-mount weights from host (gitignored). Create files before up:
+      #   scp yolov8n-pose.pt yolov8n-club.pt .../ml-engine/
+      - ./ml-engine/yolov8n-pose.pt:/app/yolov8n-pose.pt:ro
+      - ./ml-engine/yolov8n-club.pt:/app/yolov8n-club.pt:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: golf-swing-backend:latest
+    restart: unless-stopped
+    depends_on:
+      ml-engine:
+        condition: service_healthy
+    environment:
+      PORT: "3000"
+      ML_ENGINE_URL: http://ml-engine:8000
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      TEMP_DIR: /tmp
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: golf-swing-frontend:latest
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      PORT: "3000"
+      HOST: "0.0.0.0"
+      BACKEND_URL: http://backend:3000
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/nginx.conf:ro
+
+volumes:
+  ml_output:
