@@ -76,9 +76,27 @@ docker compose down -v   # also remove annotated-video volume
 
 ## Troubleshooting
 
-**`ml-engine` unhealthy / crash**  
-Check weights mounts: `ls -lh ml-engine/*.pt` on the host.  
-`docker compose logs ml-engine`
+**`ml-engine` unhealthy / crash**
+
+1. See logs:
+   ```bash
+   docker compose logs ml-engine --tail 100
+   ```
+2. Check weights are **files**, not directories:
+   ```bash
+   ls -lh ml-engine/*.pt
+   file ml-engine/yolov8n-pose.pt
+   # must say "Zip archive" / data — NOT "directory"
+   ```
+   If Docker created empty dirs (host file was missing at first `up`):
+   ```bash
+   docker compose down
+   sudo rm -rf ml-engine/yolov8n-pose.pt ml-engine/yolov8n-club.pt
+   # scp real .pt files back into ml-engine/
+   docker compose up -d --build
+   ```
+3. Low RAM (OOM kill): VPS needs ~2–4 GB free. Check `dmesg | tail` / `docker inspect` ExitCode 137.
+4. Health: `curl -s http://127.0.0.1:8000/health` inside the container — expect `"status":"ok"`. `"ready":true` after YOLO finishes loading.
 
 **Upload 502**  
 Backend cannot reach ML: ensure service name is `ml-engine` and healthcheck passed.
