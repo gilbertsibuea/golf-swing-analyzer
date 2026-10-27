@@ -4,11 +4,16 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { Info, Loader2, Upload } from 'lucide';
 	import AnalysisProgress from '$lib/components/AnalysisProgress.svelte';
+	import AnalyzeSpotlightTour from '$lib/components/AnalyzeSpotlightTour.svelte';
 	import ClubSelector from '$lib/components/ClubSelector.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import TutorialModal from '$lib/components/TutorialModal.svelte';
 	import { uploadSwing, saveReport } from '$lib/api';
-	import { hasSeenTutorial, markTutorialSeen } from '$lib/tutorialStorage';
+	import {
+		hasSeenSpotlight,
+		markSpotlightSeen,
+		markTutorialSeen
+	} from '$lib/tutorialStorage';
 	import type { ClubType, ShotType } from '$lib/types';
 	import { ANALYSIS_STAGES, SHOT_OPTIONS } from '$lib/types';
 
@@ -16,7 +21,8 @@
 	let shotType = $state<ShotType>('full_swing');
 	let videoFile = $state<File | null>(null);
 	let videoPreview = $state<string | null>(null);
-	let showTutorial = $state(false);
+	let showSpotlight = $state(false);
+	let showGuide = $state(false);
 	let loading = $state(false);
 	let error = $state<string | null>(null);
 	let dragOver = $state(false);
@@ -35,11 +41,16 @@
 		const shotParam = page.url.searchParams.get('shot_type');
 		if (clubParam && VALID_CLUBS.has(clubParam)) club = clubParam as ClubType;
 		if (shotParam && VALID_SHOTS.has(shotParam)) shotType = shotParam as ShotType;
-		if (!hasSeenTutorial()) showTutorial = true;
+		if (!hasSeenSpotlight()) showSpotlight = true;
 	});
 
-	function closeTutorial() {
-		showTutorial = false;
+	function closeSpotlight() {
+		showSpotlight = false;
+		markSpotlightSeen();
+	}
+
+	function closeGuide() {
+		showGuide = false;
 		markTutorialSeen();
 	}
 
@@ -138,10 +149,24 @@
 			<p class="label">Sesi Baru</p>
 			<h1 class="page-title">Analisis Swing</h1>
 		</div>
-		<button type="button" class="btn-secondary shrink-0 self-start text-xs sm:self-auto" onclick={() => (showTutorial = true)}>
-			<Icon icon={Info} size={15} />
-			Panduan Rekaman
-		</button>
+		<div class="flex flex-wrap gap-2 self-start sm:self-auto">
+			<button
+				type="button"
+				class="btn-secondary shrink-0 text-xs"
+				onclick={() => (showSpotlight = true)}
+			>
+				Tutorial
+			</button>
+			<button
+				id="tour-guide"
+				type="button"
+				class="btn-secondary shrink-0 text-xs"
+				onclick={() => (showGuide = true)}
+			>
+				<Icon icon={Info} size={15} />
+				Panduan Rekaman
+			</button>
+		</div>
 	</div>
 
 	<form
@@ -151,7 +176,7 @@
 			submit();
 		}}
 	>
-		<div class="card w-full">
+		<div id="tour-shot-type" class="card w-full scroll-mt-24">
 			<p class="label">Jenis Pukulan</p>
 			<div class="grid grid-cols-4 gap-1.5 sm:gap-2">
 				{#each SHOT_OPTIONS as shot}
@@ -174,14 +199,14 @@
 
 		<div class="grid w-full min-w-0 gap-5 lg:grid-cols-12">
 			<div class="min-w-0 lg:col-span-4">
-				<div class="card">
+				<div id="tour-club" class="card scroll-mt-24">
 					<p class="label">Club</p>
 					<ClubSelector bind:value={club} />
 				</div>
 			</div>
 
 			<div class="min-w-0 lg:col-span-8">
-				<div class="card h-full">
+				<div id="tour-upload" class="card h-full scroll-mt-24">
 					<p class="label">Video Swing</p>
 
 					{#if videoPreview}
@@ -258,4 +283,10 @@
 	</div>
 {/if}
 
-<TutorialModal open={showTutorial} onclose={closeTutorial} />
+<AnalyzeSpotlightTour
+	open={showSpotlight}
+	onclose={closeSpotlight}
+	onopenGuide={() => (showGuide = true)}
+/>
+
+<TutorialModal open={showGuide} onclose={closeGuide} />

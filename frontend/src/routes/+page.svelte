@@ -26,12 +26,19 @@
 					Alat analisis performa swing golf berbasis pose detection. Upload video, konfigurasi
 					club, dan dapatkan metrik terukur beserta rekomendasi perbaikan.
 				</p>
-				<div class="mt-8 flex flex-wrap gap-3 sm:mt-10">
-					<a href="/analyze" class="btn-primary">Analisis Swing</a>
-					<a href="/report" class="btn-secondary">Laporan Terakhir</a>
+
+				<div class="mt-8 sm:mt-10">
+					<a href="/analyze" class="cta-swing group">
+						<span class="cta-swing__scene" aria-hidden="true">
+							<img src="/hero/golf-hit.gif" alt="" class="cta-swing__gif" width="72" height="72" />
+						</span>
+						<span class="cta-swing__label">
+							<span class="cta-swing__title">Analisis Swing</span>
+							<span class="cta-swing__hint">Upload video</span>
+						</span>
+					</a>
 				</div>
 			</div>
-
 		</div>
 	</div>
 </section>
@@ -81,7 +88,9 @@
 </section>
 
 <section class="container-page pb-12 sm:pb-20">
-	<div class="flex w-full min-w-0 flex-col items-start justify-between gap-5 border border-border bg-graphite p-5 sm:flex-row sm:items-center sm:gap-6 sm:p-6">
+	<div
+		class="flex w-full min-w-0 flex-col items-start justify-between gap-5 border border-border bg-graphite p-5 sm:flex-row sm:items-center sm:gap-6 sm:p-6"
+	>
 		<div class="min-w-0">
 			<p class="label">Siap Mulai</p>
 			<p class="font-display text-base font-semibold text-offwhite sm:text-lg">
@@ -91,3 +100,99 @@
 		<a href="/analyze" class="btn-primary w-full shrink-0 sm:w-auto">Mulai Sesi</a>
 	</div>
 </section>
+
+<style>
+	.cta-swing {
+		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: 1rem;
+		min-width: min(100%, 22rem);
+		padding: 0.85rem 1.25rem 0.85rem 0.85rem;
+		border-radius: 0.75rem;
+		background: #1e7a3d;
+		color: #f5f5f0;
+		text-decoration: none;
+		border: 1px solid rgba(245, 245, 240, 0.12);
+		transition:
+			transform 0.25s ease,
+			background-color 0.2s ease;
+	}
+
+	.cta-swing:hover,
+	.cta-swing:focus-visible {
+		transform: translateY(-3px) scale(1.02);
+		background: #186433;
+		outline: none;
+	}
+
+	.cta-swing:active {
+		transform: translateY(-1px) scale(1.01);
+		background: #14532d;
+	}
+
+	.cta-swing__scene {
+		position: relative;
+		z-index: 1;
+		width: 4.25rem;
+		height: 4.25rem;
+		flex-shrink: 0;
+		background: transparent;
+		overflow: visible;
+		display: grid;
+		place-items: center;
+	}
+
+	.cta-swing__gif {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		display: block;
+	}
+
+	.cta-swing__label {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+		min-width: 0;
+		flex: 1;
+	}
+
+	.cta-swing__title {
+		font-family: var(--font-display, ui-sans-serif, system-ui);
+		font-size: 1.15rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.2;
+	}
+
+	.cta-swing__hint {
+		font-size: 0.7rem;
+		font-weight: 500;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		opacity: 0.75;
+	}
+
+	.cta-swing__arrow {
+		position: relative;
+		z-index: 1;
+		font-size: 1.35rem;
+		font-weight: 600;
+		opacity: 0.85;
+		transition: transform 0.25s ease;
+	}
+
+	.cta-swing:hover .cta-swing__arrow,
+	.cta-swing:focus-visible .cta-swing__arrow {
+		transform: translateX(4px);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cta-swing__gif {
+			animation: none;
+		}
+	}
+</style>
