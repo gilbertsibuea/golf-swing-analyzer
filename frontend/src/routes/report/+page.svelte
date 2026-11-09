@@ -8,6 +8,7 @@
 	import { CLUB_LABELS, SHOT_LABELS } from '$lib/types';
 
 	let report = $state<SwingAnalysis | null>(null);
+	let ready = $state(false);
 	let videoError = $state(false);
 	let videoRetry = $state(0);
 	let videoMode = $state<'normal' | 'slow'>('normal');
@@ -25,6 +26,7 @@
 
 	onMount(() => {
 		report = loadReport();
+		ready = true;
 	});
 
 	$effect(() => {
@@ -46,7 +48,7 @@
 	}
 
 	function formatDate(iso: string): string {
-		return new Date(iso).toLocaleString('id-ID', {
+		return new Date(iso).toLocaleString('en-US', {
 			day: 'numeric',
 			month: 'long',
 			year: 'numeric',
@@ -57,24 +59,38 @@
 </script>
 
 <section class="container-page py-8 sm:py-10">
-	{#if !report}
-		<div class="w-full border border-border bg-graphite px-4 py-16 text-center sm:px-6 sm:py-20">
-			<p class="label">Laporan</p>
-			<h1 class="mt-2 font-display text-xl font-bold text-offwhite sm:text-2xl">Belum Ada Data</h1>
-			<p class="mx-auto mt-3 max-w-sm text-sm text-muted">
-				Upload video swing untuk mendapatkan laporan performa.
+	{#if !ready}
+		<div class="flex min-h-[50vh] w-full items-center justify-center">
+			<p class="text-sm text-muted">Loading report…</p>
+		</div>
+	{:else if !report}
+		<div
+			class="flex min-h-[60vh] w-full flex-col items-start justify-center border border-border bg-graphite px-5 py-12 sm:px-8 sm:py-16"
+		>
+			<p class="label">Report</p>
+			<h1 class="mt-2 max-w-xl font-display text-2xl font-bold tracking-tight text-offwhite sm:text-3xl">
+				No analysis yet
+			</h1>
+			<p class="mt-3 max-w-md text-sm leading-relaxed text-muted">
+				Upload a swing video to generate your performance report. Results appear here after analysis
+				finishes.
 			</p>
-			<a href="/analyze" class="btn-primary mt-8 inline-flex">Mulai Analisis</a>
+			<div class="mt-8 flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+				<a href="/analyze" class="btn-primary w-full sm:w-auto">Start analysis</a>
+				<a href="/" class="btn-secondary w-full sm:w-auto">Back to home</a>
+			</div>
 		</div>
 	{:else}
 		<!-- Header -->
-		<div class="mb-6 flex flex-col gap-4 border-b border-border pb-6 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
+		<div
+			class="mb-6 flex flex-col gap-4 border-b border-border pb-6 sm:mb-8 sm:flex-row sm:items-end sm:justify-between"
+		>
 			<div class="min-w-0">
-				<p class="label">Laporan Sesi</p>
-				<h1 class="page-title">Hasil Analisis</h1>
+				<p class="label">Session report</p>
+				<h1 class="page-title">Analysis results</h1>
 				<p class="mt-1 text-xs text-disabled">{formatDate(report.analyzed_at)}</p>
 			</div>
-			<div class="flex flex-wrap items-center gap-3 text-xs text-muted">
+			<div class="flex min-w-0 flex-wrap items-center gap-3 text-xs text-muted">
 				<span>{CLUB_LABELS[report.club] ?? report.club}</span>
 				<span class="text-border">|</span>
 				<span>{SHOT_LABELS[report.shot_type] ?? report.shot_type}</span>
@@ -89,24 +105,28 @@
 
 		<!-- Main analysis: Spider chart + score -->
 		<div class="card mb-5 w-full min-w-0 sm:mb-6">
-			<p class="label mb-6">Analisis Utama</p>
+			<p class="label mb-6">Main analysis</p>
 			<div class="grid w-full min-w-0 items-center gap-8 lg:grid-cols-2">
 				<div class="flex justify-center">
 					<SpiderChart summary={report.metrics.summary} size={320} />
 				</div>
-				<div class="flex flex-col items-center justify-center gap-4 border-t border-border pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+				<div
+					class="flex flex-col items-center justify-center gap-4 border-t border-border pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0"
+				>
 					<div class="text-center">
-						<p class="label">Overall Score</p>
+						<p class="label">Overall score</p>
 						<p class="font-display text-6xl font-bold tabular-nums text-offwhite">{report.score}</p>
-						<p class="mt-1 text-sm text-muted">dari 100</p>
+						<p class="mt-1 text-sm text-muted">out of 100</p>
 					</div>
-					<div class="grid w-full max-w-xs grid-cols-2 gap-2 text-center text-xs sm:max-w-sm sm:grid-cols-3">
+					<div
+						class="grid w-full max-w-xs grid-cols-2 gap-2 text-center text-xs sm:max-w-sm sm:grid-cols-3"
+					>
 						{#each [
 							{ label: 'Tempo', value: report.metrics.summary.tempo },
-							{ label: 'Postur', value: report.metrics.summary.posture },
-							{ label: 'Rotasi', value: report.metrics.summary.rotation },
+							{ label: 'Posture', value: report.metrics.summary.posture },
+							{ label: 'Rotation', value: report.metrics.summary.rotation },
 							{ label: 'Balance', value: report.metrics.summary.balance },
-							{ label: 'Kepala', value: report.metrics.summary.head_stability }
+							{ label: 'Head', value: report.metrics.summary.head_stability }
 						] as item}
 							<div class="border border-border bg-obsidian px-2 py-2">
 								<p class="text-muted">{item.label}</p>
@@ -120,67 +140,80 @@
 
 		<!-- Notes / Recommendation -->
 		<div class="card mb-5 w-full min-w-0 sm:mb-6">
-			<p class="label">Catatan Analisis</p>
+			<p class="label">Analysis notes</p>
 			<p class="mt-3 text-sm leading-relaxed text-offwhite">{report.recommendation}</p>
 			{#if report.validation}
 				<div class="mt-4 border-t border-border pt-4">
-					<p class="label mb-2">Kualitas Video</p>
+					<p class="label mb-2">Video quality</p>
 					<div class="flex flex-wrap gap-4 text-xs text-muted">
-						<span>Ketajaman: {report.validation.sharpness.toFixed(0)}</span>
-						<span>Visibilitas sendi: {(report.validation.visible_keypoint_ratio * 100).toFixed(0)}%</span>
+						<span>Sharpness: {report.validation.sharpness.toFixed(0)}</span>
+						<span
+							>Joint visibility: {(report.validation.visible_keypoint_ratio * 100).toFixed(0)}%</span
+						>
 						<span>{report.validation.video.fps.toFixed(0)} fps</span>
-						<span>{report.validation.video.duration_sec}s &middot; {report.validation.video.frame_count} frame</span>
-						<span>{report.metrics.frames_analyzed} frame dianalisis</span>
+						<span
+							>{report.validation.video.duration_sec}s &middot; {report.validation.video
+								.frame_count} frames</span
+						>
+						<span>{report.metrics.frames_analyzed} frames analyzed</span>
 					</div>
 					{#if report.metrics.quality?.low_fps_warning}
 						<p class="mt-2 text-xs text-muted">
-							Video di bawah 45 fps — metrik tempo dan rotasi kurang akurat. Rekam ulang di 60 fps untuk hasil lebih baik.
+							Video is under 45 fps — tempo and rotation metrics are less accurate. Re-record at 60
+							fps for better results.
 						</p>
 					{/if}
 				</div>
 			{/if}
 			{#if report.trim?.applied}
 				<div class="mt-4 border-t border-border pt-4">
-					<p class="label mb-2">Auto-Trim Segmen Swing</p>
+					<p class="label mb-2">Auto-trim swing segment</p>
 					<p class="text-sm text-offwhite">
-						Setup <span class="font-semibold text-highlight">{report.trim.setup_trimmed_sec.toFixed(1)}s</span>
-						dihapus &middot; menganalisis
-						<span class="font-semibold">{report.trim.trimmed_start_sec.toFixed(1)}s – {report.trim.trimmed_end_sec.toFixed(1)}s</span>
-						dari {report.trim.original_duration_sec.toFixed(1)}s total
+						Setup
+						<span class="font-semibold text-highlight"
+							>{report.trim.setup_trimmed_sec.toFixed(1)}s</span
+						>
+						removed &middot; analyzing
+						<span class="font-semibold"
+							>{report.trim.trimmed_start_sec.toFixed(1)}s – {report.trim.trimmed_end_sec.toFixed(
+								1
+							)}s</span
+						>
+						of {report.trim.original_duration_sec.toFixed(1)}s total
 					</p>
 					<p class="mt-2 text-xs text-muted">
-						Frame sumber: {report.trim.source_start_frame}–{report.trim.source_end_frame}
+						Source frames: {report.trim.source_start_frame}–{report.trim.source_end_frame}
 						&middot; Address #{report.trim.address_frame_source}
 						&middot; Top #{report.trim.top_frame_source}
 						&middot; Impact #{report.trim.impact_frame_source}
 					</p>
 					<p class="mt-1 text-xs text-disabled">
-						Video tracking hanya menampilkan segmen yang dipotong — bukan full upload.
+						Tracking video shows the trimmed segment only — not the full upload.
 					</p>
 				</div>
 			{/if}
 			{#if report.metrics.club}
 				<div class="mt-4 border-t border-border pt-4">
-					<p class="label mb-2">Club Tracking</p>
+					<p class="label mb-2">Club tracking</p>
 					<div class="flex flex-wrap gap-4 text-xs text-muted">
-						<span>Skor track: {report.metrics.club.tracking_score}</span>
+						<span>Track score: {report.metrics.club.tracking_score}</span>
 						<span>Confidence: {(report.metrics.club.mean_confidence * 100).toFixed(0)}%</span>
 						<span>Detect rate: {(report.metrics.club.detection_rate * 100).toFixed(0)}%</span>
 						<span>Method: {report.metrics.club.method}</span>
 						{#if report.metrics.club.shaft_lean_impact_deg != null}
-							<span>Shaft lean impact: {report.metrics.club.shaft_lean_impact_deg.toFixed(1)}°</span>
+							<span>Shaft lean at impact: {report.metrics.club.shaft_lean_impact_deg.toFixed(1)}°</span>
 						{/if}
 						{#if report.metrics.club.impact_refined}
-							<span class="text-highlight">Impact direfine dari tip stik</span>
+							<span class="text-highlight">Impact refined from club tip</span>
 						{/if}
 					</div>
 					<p class="mt-2 text-xs text-disabled">
-						Overlay merah (grip → clubhead) hanya tampil saat deteksi YOLO/line cukup yakin.
-						Miss di downswing = tanpa garis palsu. Method: {report.metrics.club.method}.
+						Red overlay (grip → clubhead) only appears when YOLO/line detection is confident enough.
+						Misses on the downswing mean no fake line. Method: {report.metrics.club.method}.
 						{#if !report.metrics.club.yolo_enabled}
-							{' '}Pasang yolov8n-club.pt (lihat datasets/clubhead/README.md) setelah annotasi manual.
+							{' '}Install yolov8n-club.pt (see datasets/clubhead/README.md) after manual annotation.
 						{:else}
-							{' '}Perkuat model: label manual di datasets/clubhead/to_label lalu train ulang.
+							{' '}Improve the model: label frames in datasets/clubhead/to_label, then retrain.
 						{/if}
 					</p>
 				</div>
@@ -194,7 +227,7 @@
 		{#if videoUrl}
 			<div class="card mb-5 w-full min-w-0 sm:mb-6">
 				<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<p class="label">Video Tracking Sendi &amp; Stik</p>
+					<p class="label">Joint &amp; club tracking video</p>
 					{#if report?.annotated_video_slow_url}
 						<div class="flex gap-2">
 							<button
@@ -209,21 +242,23 @@
 								class="text-xs {videoMode === 'slow' ? 'btn-primary' : 'btn-secondary'}"
 								onclick={() => setVideoMode('slow')}
 							>
-								Slow Motion ({slowmoFactor}x)
+								Slow motion ({slowmoFactor}x)
 							</button>
 						</div>
 					{/if}
 				</div>
 				<div class="overflow-hidden border border-border bg-obsidian">
 					{#if videoError}
-						<div class="flex min-h-48 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-muted">
-							<p>Video tidak dapat diputar. Pastikan layanan backend masih berjalan, lalu coba lagi.</p>
+						<div
+							class="flex min-h-48 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-muted"
+						>
+							<p>Video could not play. Make sure the backend is running, then try again.</p>
 							<div class="flex flex-wrap justify-center gap-2">
 								<button type="button" class="btn-secondary text-xs" onclick={retryVideo}>
-									Coba putar lagi
+									Retry playback
 								</button>
 								<a href={videoUrl} class="btn-secondary text-xs" target="_blank" rel="noopener">
-									Buka video langsung
+									Open video directly
 								</a>
 							</div>
 						</div>
@@ -241,7 +276,7 @@
 					{/if}
 				</div>
 				<p class="mt-2 text-xs text-muted">
-					Hijau = skeleton &middot; titik terang = sendi &middot; garis putih = jejak gerakan
+					Green = skeleton &middot; bright dots = joints &middot; white line = motion trail
 					{#if videoMode === 'slow'}
 						&middot; slow motion {slowmoFactor}x @ {report?.validation?.video.fps.toFixed(0) ?? '—'} fps
 					{/if}
@@ -251,7 +286,7 @@
 
 		<!-- Detailed metrics -->
 		<div class="w-full min-w-0">
-			<p class="label mb-3">Metrik Detail</p>
+			<p class="label mb-3">Detailed metrics</p>
 			<DetailedMetrics metrics={report.metrics} />
 		</div>
 
@@ -260,10 +295,10 @@
 				href="/analyze?club={report.club}&shot_type={report.shot_type}"
 				class="btn-primary w-full sm:w-auto"
 			>
-				Pukulan Berikutnya ({CLUB_LABELS[report.club] ?? report.club})
+				Next swing ({CLUB_LABELS[report.club] ?? report.club})
 			</a>
-			<a href="/analyze" class="btn-secondary w-full sm:w-auto">Analisis Lain</a>
-			<a href="/" class="btn-secondary w-full sm:w-auto">Beranda</a>
+			<a href="/analyze" class="btn-secondary w-full sm:w-auto">Analyze another</a>
+			<a href="/" class="btn-secondary w-full sm:w-auto">Home</a>
 		</div>
 	{/if}
 </section>

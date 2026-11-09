@@ -14,14 +14,14 @@
 <div class="card mb-5 w-full min-w-0 sm:mb-6">
 	<div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 		<div class="min-w-0">
-			<p class="label">Pukulan Berikutnya</p>
-			<p class="section-title">Fokus Latihan</p>
+			<p class="label">Next swing</p>
+			<p class="section-title">Practice focus</p>
 			<p class="mt-1 text-sm text-muted">
 				{plan.shotLabel} &middot; {plan.clubLabel}
 			</p>
 		</div>
 		<a href={plan.analyzeUrl} class="btn-primary shrink-0 self-start text-xs sm:text-sm">
-			Rekam Lagi
+			Record again
 		</a>
 	</div>
 

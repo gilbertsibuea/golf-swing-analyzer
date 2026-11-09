@@ -10,10 +10,10 @@
 
 	const axes = $derived([
 		{ label: 'Tempo', value: summary.tempo },
-		{ label: 'Postur', value: summary.posture },
-		{ label: 'Rotasi', value: summary.rotation },
+		{ label: 'Posture', value: summary.posture },
+		{ label: 'Rotation', value: summary.rotation },
 		{ label: 'Balance', value: summary.balance },
-		{ label: 'Kepala', value: summary.head_stability }
+		{ label: 'Head', value: summary.head_stability }
 	]);
 
 	const cx = $derived(size / 2);

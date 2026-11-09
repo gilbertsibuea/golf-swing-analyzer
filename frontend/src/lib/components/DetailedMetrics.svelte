@@ -9,10 +9,10 @@
 
 	const summaryItems = $derived([
 		{ label: 'Tempo', value: metrics.summary.tempo },
-		{ label: 'Postur', value: metrics.summary.posture },
-		{ label: 'Rotasi', value: metrics.summary.rotation },
-		{ label: 'Keseimbangan', value: metrics.summary.balance },
-		{ label: 'Kepala', value: metrics.summary.head_stability }
+		{ label: 'Posture', value: metrics.summary.posture },
+		{ label: 'Rotation', value: metrics.summary.rotation },
+		{ label: 'Balance', value: metrics.summary.balance },
+		{ label: 'Head', value: metrics.summary.head_stability }
 	]);
 
 	function barColor(value: number): string {
@@ -20,10 +20,6 @@
 		if (value >= 70) return 'bg-golf';
 		if (value >= 55) return 'bg-warning';
 		return 'bg-error';
-	}
-
-	function formatStat(stat: { avg: number; min: number; max: number }) {
-		return `${stat.avg.toFixed(1)} (min ${stat.min.toFixed(1)}, max ${stat.max.toFixed(1)})`;
 	}
 
 	function pct(n: number): string {
@@ -46,7 +42,7 @@
 
 {#if metrics.quality}
 	<p class="mt-3 text-xs text-disabled">
-		Kualitas deteksi pose: {pct(metrics.quality.detection_quality)}
+		Pose detection quality: {pct(metrics.quality.detection_quality)}
 		{#if metrics.arms?.handedness}
 			&middot; {metrics.arms.handedness === 'right' ? 'Right-handed' : 'Left-handed'}
 		{/if}
@@ -57,7 +53,7 @@
 {#if metrics.biomechanics || metrics.posture}
 	<div class="mt-5 grid gap-5 lg:grid-cols-2">
 		<div class="card">
-			<p class="label">Postur — Spine Angle</p>
+			<p class="label">Posture — spine angle</p>
 			<dl class="space-y-2 text-sm">
 				<div class="flex justify-between gap-4">
 					<dt class="text-muted">Address</dt>
@@ -72,7 +68,7 @@
 					</dd>
 				</div>
 				<div class="flex justify-between gap-4">
-					<dt class="text-muted">Retensi (Δ)</dt>
+					<dt class="text-muted">Retention (Δ)</dt>
 					<dd class="text-offwhite">
 						{(metrics.posture?.spine_angle_retention_deg ?? metrics.biomechanics?.spine_angle_retention_deg ?? 0).toFixed(1)}°
 					</dd>
@@ -81,22 +77,22 @@
 		</div>
 
 		<div class="card">
-			<p class="label">Rotasi — X-Factor</p>
+			<p class="label">Rotation — X-factor</p>
 			<dl class="space-y-2 text-sm">
 				<div class="flex justify-between gap-4">
-					<dt class="text-muted">Shoulder Turn</dt>
+					<dt class="text-muted">Shoulder turn</dt>
 					<dd class="text-offwhite">
 						{(metrics.rotation?.shoulder_rotation_max_deg ?? metrics.biomechanics?.shoulder_rotation_max_deg ?? 0).toFixed(1)}°
 					</dd>
 				</div>
 				<div class="flex justify-between gap-4">
-					<dt class="text-muted">Hip Turn</dt>
+					<dt class="text-muted">Hip turn</dt>
 					<dd class="text-offwhite">
 						{(metrics.rotation?.hip_rotation_max_deg ?? metrics.biomechanics?.hip_rotation_max_deg ?? 0).toFixed(1)}°
 					</dd>
 				</div>
 				<div class="flex justify-between gap-4">
-					<dt class="text-muted">X-Factor</dt>
+					<dt class="text-muted">X-factor</dt>
 					<dd class="font-display font-semibold text-offwhite">
 						{(metrics.rotation?.x_factor_deg ?? metrics.biomechanics?.x_factor_deg ?? 0).toFixed(1)}°
 					</dd>
@@ -113,7 +109,7 @@
 			<p class="label">Tempo</p>
 			<dl class="space-y-2 text-sm">
 				<div class="flex justify-between gap-4">
-					<dt class="text-muted">Rasio Backswing : Downswing</dt>
+					<dt class="text-muted">Backswing : downswing ratio</dt>
 					<dd class="font-display font-semibold text-offwhite">
 						{(metrics.tempo?.ratio ?? metrics.biomechanics?.tempo_ratio ?? 0).toFixed(2)} : 1
 					</dd>
@@ -121,11 +117,11 @@
 				<div class="flex justify-between gap-4">
 					<dt class="text-muted">Backswing</dt>
 					<dd class="text-offwhite">
-						{metrics.tempo?.backswing_frames ?? metrics.biomechanics?.backswing_frames ?? 0} frame
+						{metrics.tempo?.backswing_frames ?? metrics.biomechanics?.backswing_frames ?? 0} frames
 					</dd>
 				</div>
 				<div class="flex justify-between gap-4">
-					<dt class="text-muted">Fase (frame)</dt>
+					<dt class="text-muted">Phases (frames)</dt>
 					<dd class="text-offwhite">
 						Addr {metrics.tempo?.address_frame ?? metrics.biomechanics?.address_frame ?? 0}
 						&middot; Top {metrics.tempo?.top_frame ?? metrics.biomechanics?.top_frame ?? 0}
@@ -136,7 +132,7 @@
 		</div>
 
 		<div class="card">
-			<p class="label">Balance — Sway</p>
+			<p class="label">Balance — sway</p>
 			<dl class="space-y-2 text-sm">
 				<div class="flex justify-between gap-4">
 					<dt class="text-muted">Sway (normalized)</dt>
@@ -145,7 +141,7 @@
 					</dd>
 				</div>
 				<div class="flex justify-between gap-4">
-					<dt class="text-muted">Lead Arm (impact)</dt>
+					<dt class="text-muted">Lead arm (impact)</dt>
 					<dd class="text-offwhite">
 						{(metrics.arms?.lead_arm_straightness_impact_deg ?? metrics.biomechanics?.lead_arm_straightness_impact_deg ?? 0).toFixed(1)}°
 					</dd>
@@ -157,20 +153,20 @@
 
 <!-- Head -->
 <div class="card mt-5">
-	<p class="label">Kepala</p>
+	<p class="label">Head</p>
 	<div class="grid gap-4 sm:grid-cols-3">
 		<div>
-			<p class="text-xs text-muted">Stabilitas</p>
+			<p class="text-xs text-muted">Stability</p>
 			<p class="font-display text-lg font-semibold">{metrics.head.stability_score}</p>
 		</div>
 		<div>
-			<p class="text-xs text-muted">Gerak Normalized</p>
+			<p class="text-xs text-muted">Normalized movement</p>
 			<p class="font-display text-lg font-semibold">
 				{(metrics.head.movement_normalized ?? metrics.biomechanics?.head_movement_normalized ?? 0).toFixed(3)}
 			</p>
 		</div>
 		<div>
-			<p class="text-xs text-muted">Ref. Lebar Bahu</p>
+			<p class="text-xs text-muted">Ref. shoulder width</p>
 			<p class="font-display text-lg font-semibold">
 				{(metrics.head.reference_shoulder_width_px ?? metrics.biomechanics?.address_shoulder_width_px ?? 0).toFixed(0)} px
 			</p>
@@ -180,7 +176,7 @@
 
 <!-- Joint distances -->
 <div class="card mt-5">
-	<p class="label">Jarak Antar Sendi (px)</p>
+	<p class="label">Joint distances (px)</p>
 	<div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
 		{#each Object.entries(metrics.joint_distances) as [name, stat]}
 			<div class="flex justify-between gap-2 border-b border-border py-2 text-xs">
@@ -193,7 +189,7 @@
 
 <!-- Joint angles -->
 <div class="card mt-5">
-	<p class="label">Sudut Sendi (°)</p>
+	<p class="label">Joint angles (°)</p>
 	<div class="grid gap-2 sm:grid-cols-2">
 		{#each Object.entries(metrics.joint_angles) as [name, stat]}
 			<div class="flex justify-between gap-2 border-b border-border py-2 text-xs">
@@ -205,5 +201,5 @@
 </div>
 
 <p class="mt-3 text-xs text-disabled">
-	{metrics.frames_analyzed} frame dianalisis
+	{metrics.frames_analyzed} frames analyzed
 </p>

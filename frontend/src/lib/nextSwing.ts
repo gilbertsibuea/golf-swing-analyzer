@@ -23,32 +23,32 @@ export interface NextSwingPlan {
 
 const METRIC_LABELS: Record<MetricKey, string> = {
 	tempo: 'Tempo',
-	posture: 'Postur',
-	rotation: 'Rotasi',
+	posture: 'Posture',
+	rotation: 'Rotation',
 	balance: 'Balance',
-	head_stability: 'Kepala Stabil'
+	head_stability: 'Head stability'
 };
 
 const BASE_DRILLS: Record<MetricKey, { focus: string; drill: string }> = {
 	tempo: {
-		focus: 'Rasio backswing : downswing ≈ 3 : 1',
-		drill: 'Hitung frame atau ritme: 3 hitungan naik, 1 hitungan turun. Hindari rush di transisi atas.'
+		focus: 'Backswing : downswing ratio ≈ 3 : 1',
+		drill: 'Count frames or rhythm: 3 counts up, 1 count down. Avoid rushing the top transition.'
 	},
 	posture: {
-		focus: 'Spine angle retention address → impact',
-		drill: 'Pertahankan sudut spine (mid-hip ke mid-shoulder) konsisten. Hindari early extension atau berdiri tegak sebelum impact.'
+		focus: 'Spine angle retention from address → impact',
+		drill: 'Keep spine angle (mid-hip to mid-shoulder) consistent. Avoid early extension or standing up before impact.'
 	},
 	rotation: {
-		focus: 'X-factor: shoulder turn lebih besar dari hip turn',
-		drill: 'Coil bahu ke belakang sambil membatasi rotasi pinggul. Targetkan selisih 20–40° pada top of swing.'
+		focus: 'X-factor: shoulder turn greater than hip turn',
+		drill: 'Coil the shoulders back while limiting hip rotation. Aim for a 20–40° gap at the top of the swing.'
 	},
 	balance: {
-		focus: 'Minimalkan lateral sway saat backswing',
-		drill: 'Jaga mid-hip stabil relatif ke trail ankle. Transfer berat tanpa slide berlebihan ke arah target.'
+		focus: 'Minimize lateral sway on the backswing',
+		drill: 'Keep mid-hip stable relative to the trail ankle. Transfer weight without sliding toward the target.'
 	},
 	head_stability: {
-		focus: 'Gerak kepala minimal relatif ke lebar bahu',
-		drill: 'Ukur stabilitas dari hidung/telinga. Gerak kepala <15% lebar bahu dari address ke impact.'
+		focus: 'Minimal head movement relative to shoulder width',
+		drill: 'Measure stability from the nose/ear. Keep head movement under 15% of shoulder width from address to impact.'
 	}
 };
 
@@ -57,34 +57,34 @@ const SHOT_DRILL_OVERRIDES: Partial<
 > = {
 	full_swing: {
 		rotation: {
-			focus: 'Shoulder turn maksimal tanpa sway',
-			drill: 'Coil ke belakang hingga bahu belakang hampir menutup target, pinggul tetap di dalam.'
+			focus: 'Max shoulder turn without sway',
+			drill: 'Coil back until the trail shoulder nearly covers the target, keeping the hips quiet.'
 		}
 	},
 	chip: {
 		balance: {
-			focus: 'Weight forward & wrist firm',
-			drill: '70% berat di kaki depan. Gerakan pendek seperti putt dengan sedikit hinge pergelangan.'
+			focus: 'Weight forward & firm wrists',
+			drill: '70% weight on the lead foot. Short stroke like a putt with a slight wrist hinge.'
 		},
 		head_stability: {
-			focus: 'Kepala sangat stabil — minim gerakan',
-			drill: 'Chip = kontrol. Kepala hampir tidak bergerak sepanjang stroke.'
+			focus: 'Very quiet head — minimal motion',
+			drill: 'Chip = control. Keep the head nearly still through the stroke.'
 		}
 	},
 	pitch: {
 		tempo: {
-			focus: 'Accelerate through impact, jangan decelerate',
-			drill: 'Backswing pendek, follow-through penuh. Rasakan club "jatuh" ke bawah pada bola.'
+			focus: 'Accelerate through impact — don’t decelerate',
+			drill: 'Short backswing, full follow-through. Feel the club fall into the ball.'
 		}
 	},
 	putt: {
 		head_stability: {
-			focus: 'Kepala benar-benar diam selama stroke',
-			drill: 'Dengar impact, jangan lihat — kepala tetap di posisi hingga putter melewati bola.'
+			focus: 'Head completely still through the stroke',
+			drill: 'Listen for impact — don’t look. Hold head position until the putter passes the ball.'
 		},
 		balance: {
-			focus: 'Lower body seperti patung',
-			drill: 'Hanya bahu & lengan bergerak. Kaki dan pinggul diam total selama putt.'
+			focus: 'Lower body like a statue',
+			drill: 'Only shoulders and arms move. Feet and hips stay still for the whole putt.'
 		}
 	}
 };
@@ -94,20 +94,20 @@ const CLUB_DRILL_OVERRIDES: Partial<
 > = {
 	driver: {
 		rotation: {
-			focus: 'Turn lebar untuk jarak maksimal',
-			drill: 'Backswing panjang dengan coil penuh. Lebar stance membantu rotasi tanpa kehilangan balance.'
+			focus: 'Wide turn for max distance',
+			drill: 'Long backswing with a full coil. A wider stance helps rotation without losing balance.'
 		}
 	},
 	wedge: {
 		balance: {
-			focus: 'Kontrol weight shift minimal',
-			drill: 'Wedge shot = presisi. Transfer berat halus, hindari body slide lateral.'
+			focus: 'Minimal, controlled weight shift',
+			drill: 'Wedge shot = precision. Soft weight transfer; avoid a lateral body slide.'
 		}
 	},
 	putter: {
 		tempo: {
-			focus: 'Pendulum motion yang sama setiap putt',
-			drill: 'Backswing dan follow-through dengan panjang yang identik — seperti bandul jam.'
+			focus: 'Same pendulum motion every putt',
+			drill: 'Match backswing and follow-through length — like a clock pendulum.'
 		}
 	}
 };
