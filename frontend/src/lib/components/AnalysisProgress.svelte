@@ -12,7 +12,7 @@
 		shotType?: ShotType;
 	}
 
-	let { activeIndex = 0, club = 'iron_7', shotType = 'full_swing' }: Props = $props();
+	let { activeIndex = 0, club = 'driver', shotType = 'full_swing' }: Props = $props();
 
 	let tipIndex = $state(0);
 	let elapsed = $state(0);
@@ -42,7 +42,7 @@
 
 <div class="card w-full max-w-md">
 	<div class="mb-4 flex items-end justify-between gap-4">
-		<p class="label mb-0">Proses Analisis</p>
+		<p class="label mb-0">Analysis progress</p>
 		<span class="text-xs tabular-nums text-disabled">{elapsed}s</span>
 	</div>
 
@@ -71,11 +71,11 @@
 	</ol>
 
 	<div class="mt-4 border-t border-border pt-4">
-		<p class="label">Catatan</p>
+		<p class="label">Tip</p>
 		<p class="text-sm leading-relaxed text-muted">{currentTip.text}</p>
 	</div>
 
 	<p class="mt-4 text-center text-xs text-disabled">
-		Analisis membutuhkan waktu 30–90 detik tergantung durasi video.
+		Analysis usually takes 30–90 seconds depending on video length.
 	</p>
 </div>

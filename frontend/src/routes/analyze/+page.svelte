@@ -17,7 +17,7 @@
 	import type { ClubType, ShotType } from '$lib/types';
 	import { ANALYSIS_STAGES, SHOT_OPTIONS } from '$lib/types';
 
-	let club = $state<ClubType>('iron_7');
+	let club = $state<ClubType>('driver');
 	let shotType = $state<ShotType>('full_swing');
 	let videoFile = $state<File | null>(null);
 	let videoPreview = $state<string | null>(null);
@@ -75,12 +75,12 @@
 		if (!file) return;
 
 		if (!file.type.startsWith('video/')) {
-			error = 'File harus berupa video (MP4, MOV, AVI, dll.)';
+			error = 'File must be a video (MP4, MOV, AVI, etc.)';
 			return;
 		}
 
 		if (file.size > maxSizeMB * 1024 * 1024) {
-			error = `Ukuran file maksimal ${maxSizeMB} MB`;
+			error = `File size must be ${maxSizeMB} MB or less`;
 			return;
 		}
 
@@ -108,7 +108,7 @@
 
 	async function submit() {
 		if (!videoFile) {
-			error = 'Upload video swing terlebih dahulu';
+			error = 'Upload a swing video first';
 			return;
 		}
 
@@ -121,7 +121,7 @@
 			saveReport(result);
 			await goto('/report');
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'Terjadi kesalahan';
+			error = err instanceof Error ? err.message : 'Something went wrong';
 		} finally {
 			stopStageTimer();
 			loading = false;
@@ -146,8 +146,8 @@
 	<div class="container-page relative z-10 py-8 sm:py-10">
 	<div class="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
 		<div class="min-w-0">
-			<p class="label">Sesi Baru</p>
-			<h1 class="page-title">Analisis Swing</h1>
+			<p class="label">New session</p>
+			<h1 class="page-title">Swing Analysis</h1>
 		</div>
 		<div class="flex flex-wrap gap-2 self-start sm:self-auto">
 			<button
@@ -164,7 +164,7 @@
 				onclick={() => (showGuide = true)}
 			>
 				<Icon icon={Info} size={15} />
-				Panduan Rekaman
+				Recording guide
 			</button>
 		</div>
 	</div>
@@ -177,7 +177,7 @@
 		}}
 	>
 		<div id="tour-shot-type" class="card w-full scroll-mt-24">
-			<p class="label">Jenis Pukulan</p>
+			<p class="label">Shot type</p>
 			<div class="grid grid-cols-4 gap-1.5 sm:gap-2">
 				{#each SHOT_OPTIONS as shot}
 					<button
@@ -207,7 +207,7 @@
 
 			<div class="min-w-0 lg:col-span-8">
 				<div id="tour-upload" class="card h-full scroll-mt-24">
-					<p class="label">Video Swing</p>
+					<p class="label">Swing video</p>
 
 					{#if videoPreview}
 						<div class="relative w-full overflow-hidden border border-border bg-obsidian">
@@ -219,7 +219,7 @@
 								class="absolute right-2 top-2 border border-border bg-graphite px-2 py-1 text-xs text-muted hover:text-offwhite"
 								onclick={removeVideo}
 							>
-								Hapus
+								Remove
 							</button>
 						</div>
 						<p class="mt-2 truncate text-xs text-disabled">{videoFile?.name}</p>
@@ -239,9 +239,9 @@
 							onkeydown={(e) => e.key === 'Enter' && document.getElementById('video-upload')?.click()}
 						>
 							<Icon icon={Upload} size={28} class="mb-3 text-muted" />
-							<p class="text-center text-sm font-medium text-offwhite">Seret video ke sini</p>
+							<p class="text-center text-sm font-medium text-offwhite">Drop your video here</p>
 							<p class="mt-1 text-center text-xs text-muted">
-								atau klik untuk memilih &middot; maks. {maxSizeMB} MB
+								or click to browse &middot; max {maxSizeMB} MB
 							</p>
 						</div>
 					{/if}
@@ -264,9 +264,9 @@
 						<button type="submit" class="btn-primary w-full sm:w-auto" disabled={loading || !videoFile}>
 							{#if loading}
 								<Icon icon={Loader2} size={16} class="animate-spin" />
-								Memproses...
+								Processing...
 							{:else}
-								Analisis Swing
+								Analyze Swing
 							{/if}
 						</button>
 					</div>

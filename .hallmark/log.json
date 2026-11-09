@@ -1,0 +1,32 @@
+[
+ {
+  "mode": "redesign",
+  "depth": "full",
+  "scope": "page",
+  "shape": "Narrative Workflow",
+  "theme": "brand",
+  "axes": "dark/grotesk-sans/golf-green",
+  "hero": "Settled",
+  "nav": "edge-aligned",
+  "footer": "mast",
+  "imagery": "kept-user-photos",
+  "photos": [
+   "/hero/golfer.jpeg",
+   "/process/driving-range.jpeg",
+   "/hero/golf-hit.gif"
+  ],
+  "entry": "landing",
+  "fingerprint": "swinglab-landing-2026-11-09",
+  "sections": [
+   "Hero",
+   "How a session runs",
+   "Close"
+  ],
+  "signature": "golfer ground + Analyze Swing",
+  "waived": [
+   "8"
+  ],
+  "prompt": "golf swing analysis landing redesign keep backgrounds",
+  "date": "2026-11-09"
+ }
+]

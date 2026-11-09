@@ -1,0 +1,24 @@
+{
+  "scanned": "2026-11-09",
+  "findings": {
+    "fonts": "Montserrat (display) + Inter (body) via Google Fonts in app.html; Tailwind fontFamily.display/sans",
+    "palette": "Tailwind extend: obsidian #0B0F14, graphite #151A21, border #252C35, golf #1E7A3D, highlight #A6E3A1, offwhite #E8E8E8, muted #9AA3AD (frontend/tailwind.config.js)",
+    "motion": "CSS transitions only; CTA transform/scale; prefers-reduced-motion on gif",
+    "spacing": "Tailwind default + container-page max-w-6xl",
+    "framework": "SvelteKit 2 + Vite 6 + Tailwind 3 (frontend/package.json)"
+  },
+  "preserve": [
+    "SwingLab brand greens (golf, highlight)",
+    "Logo /brand/swinglab-mark.png",
+    "Background images /hero/golfer.jpeg and /process/driving-range.jpeg",
+    "CTA gif /hero/golf-hit.gif",
+    "Links /analyze and wiring",
+    "English landing copy facts"
+  ],
+  "introduce": [
+    "Hallmark theme tokens + stamp",
+    "Hero composition discipline (no eyebrow, no tracked caps)",
+    "Recomposed sections without AI-template cards",
+    "Replace Inter as default body face via theme"
+  ]
+}

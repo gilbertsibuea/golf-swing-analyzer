@@ -222,22 +222,22 @@ export const SHOT_OPTIONS: ShotOption[] = [
 	{
 		value: 'full_swing',
 		label: 'Full Swing',
-		description: 'Drive atau pukulan penuh dari tee/fairway'
+		description: 'Full drive or iron shot from the tee or fairway'
 	},
 	{
 		value: 'chip',
 		label: 'Chip',
-		description: 'Pukulan pendek dekat green'
+		description: 'Short shot near the green'
 	},
 	{
 		value: 'pitch',
 		label: 'Pitch',
-		description: 'Pukulan menengah dengan trajektori tinggi'
+		description: 'Mid-range shot with a higher trajectory'
 	},
 	{
 		value: 'putt',
 		label: 'Putt',
-		description: 'Pukulan di atas green menuju hole'
+		description: 'Stroke on the green toward the hole'
 	}
 ];
 
@@ -250,12 +250,12 @@ export const SHOT_LABELS: Record<string, string> = Object.fromEntries(
 );
 
 export const ANALYSIS_STAGES = [
-	{ id: 'validate', label: 'Memvalidasi video' },
-	{ id: 'quality_check', label: 'Memeriksa kualitas & sudut kamera' },
-	{ id: 'locate_swing', label: 'Mencari segmen swing' },
-	{ id: 'extract_pose', label: 'Mengekstrak pose per frame' },
-	{ id: 'track_club', label: 'Melacak stik golf' },
-	{ id: 'compute_metrics', label: 'Menghitung metrik sendi' },
-	{ id: 'render_video', label: 'Membuat video analisis' },
-	{ id: 'score', label: 'Menghitung skor & rekomendasi' }
+	{ id: 'validate', label: 'Validating video' },
+	{ id: 'quality_check', label: 'Checking quality & camera angle' },
+	{ id: 'locate_swing', label: 'Finding the swing segment' },
+	{ id: 'extract_pose', label: 'Extracting pose per frame' },
+	{ id: 'track_club', label: 'Tracking the club' },
+	{ id: 'compute_metrics', label: 'Computing joint metrics' },
+	{ id: 'render_video', label: 'Rendering analysis video' },
+	{ id: 'score', label: 'Scoring & recommendations' }
 ];

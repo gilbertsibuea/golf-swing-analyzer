@@ -11,28 +11,28 @@
 
 	const slides = [
 		{
-			title: 'Posisi Kamera',
-			text: 'Setinggi pinggang, tegak lurus, jarak 2–3 meter. Rekam dari samping — face-on atau down-the-line.',
+			title: 'Camera position',
+			text: 'Waist height, level, 2–3 meters away. Film from the side — face-on or down-the-line.',
 			image: '/guide/posisi-kamera.jpeg',
-			alt: 'Ilustrasi posisi kamera setinggi pinggang untuk merekam swing golf'
+			alt: 'Illustration of waist-height camera setup for recording a golf swing'
 		},
 		{
-			title: 'Pencahayaan',
-			text: 'Area swing harus cukup terang. Hindari backlight agar tubuh dan club terlihat jelas.',
+			title: 'Lighting',
+			text: 'Keep the swing area well lit. Avoid backlight so the body and club stay clear.',
 			image: '/guide/pencahayaan.jpeg',
-			alt: 'Ilustrasi pencahayaan yang benar dan salah saat merekam swing'
+			alt: 'Illustration of good and poor lighting when recording a swing'
 		},
 		{
-			title: 'Durasi Video',
-			text: '3–8 detik mencakup address, backswing, impact, dan follow-through. Format MP4/MOV.',
+			title: 'Video length',
+			text: '3–8 seconds covering address, backswing, impact, and follow-through. MP4/MOV format.',
 			image: '/guide/durasi-video.jpeg',
-			alt: 'Ilustrasi timeline fase swing dari address hingga follow-through'
+			alt: 'Illustration of a swing-phase timeline from address to follow-through'
 		},
 		{
-			title: 'Pakaian & Background',
-			text: 'Pakaian kontras dengan background. Hindari orang bergerak di belakang.',
+			title: 'Clothing & background',
+			text: 'Wear clothes that contrast with the background. Avoid people moving behind you.',
 			image: '/guide/pakaian-dan-background.jpeg',
-			alt: 'Ilustrasi pakaian kontras dan background bersih untuk analisis swing'
+			alt: 'Illustration of contrasting clothing and a clean background for swing analysis'
 		}
 	];
 
@@ -117,7 +117,7 @@
 				<button
 					type="button"
 					class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-border/80 bg-obsidian/70 p-2 text-offwhite backdrop-blur-sm transition hover:bg-obsidian"
-					aria-label="Slide sebelumnya"
+					aria-label="Previous slide"
 					onclick={prev}
 				>
 					<Icon icon={ChevronLeft} size={18} />
@@ -125,7 +125,7 @@
 				<button
 					type="button"
 					class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full border border-border/80 bg-obsidian/70 p-2 text-offwhite backdrop-blur-sm transition hover:bg-obsidian"
-					aria-label="Slide berikutnya"
+					aria-label="Next slide"
 					onclick={next}
 				>
 					<Icon icon={ChevronRight} size={18} />
@@ -134,7 +134,7 @@
 				<button
 					type="button"
 					class="absolute right-3 top-3 rounded-full border border-border/80 bg-obsidian/70 p-1.5 text-muted backdrop-blur-sm transition hover:text-offwhite"
-					aria-label="Tutup"
+					aria-label="Close"
 					onclick={() => onclose?.()}
 				>
 					<Icon icon={X} size={16} />
@@ -161,7 +161,7 @@
 							type="button"
 							class="h-2 rounded-full transition-all duration-300
 								{i === current ? 'w-6 bg-golf' : 'w-2 bg-border hover:bg-muted'}"
-							aria-label="Ke slide {i + 1}"
+							aria-label="Go to slide {i + 1}"
 							onclick={() => goTo(i)}
 						></button>
 					{/each}
@@ -170,12 +170,12 @@
 				<div class="mt-5 flex gap-2">
 					{#if current < slides.length - 1}
 						<button type="button" class="btn-primary flex-1" onclick={next}>
-							Lanjut
+							Next
 							<Icon icon={ChevronRight} size={16} />
 						</button>
 					{:else}
 						<button type="button" class="btn-primary flex-1" onclick={() => onclose?.()}>
-							Mulai Rekam
+							Start recording
 						</button>
 					{/if}
 				</div>

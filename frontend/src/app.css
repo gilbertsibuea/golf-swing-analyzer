@@ -1,14 +1,31 @@
+/* Hallmark · shape: Narrative Workflow · genre: atmospheric · theme: brand · redesign: full
+ * paper: oklch(8.5% 0.012 250) · accent: oklch(48% 0.12 150) · display: Montserrat · body: Montserrat · hero: Settled · nav: edge-aligned · footer: mast · signature: golfer ground + Analyze Swing
+ * axes: dark/grotesk-sans/golf-green · posture: committed · contrast: pass · fold: pass · draw: 2ba4d9 · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: S, could read as any sports AI; kept the real swing gif beside the action */
+/* Hallmark · waive 8 · Record Configure Review then Start Session · page already had this order; composition changed not sequence */
+/* Hallmark · reworded "Measure. Analyze. Improve." to "Swing metrics from your video" · 19 names the triad opener */
+/* Hallmark · dropped "Swing Analysis" · 54 names the eyebrow */
+/* Hallmark · dropped "Process" · 54 names the eyebrow */
+/* Hallmark · dropped "Get Started" · 54 names the eyebrow */
+/* Hallmark · dropped "Upload video" · 67 names the tracked hint */
+@import url('./tokens.css');
+@import url('./base.css') layer(base);
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
 	html {
-		@apply overflow-x-hidden;
+		overflow-x: clip;
 	}
 
 	body {
-		@apply min-h-screen w-full overflow-x-hidden bg-obsidian font-sans text-offwhite antialiased;
+		@apply min-h-screen w-full antialiased;
+		overflow-x: clip;
+		background: var(--color-paper);
+		color: var(--color-ink);
+		font-family: var(--font-body);
 	}
 }
 
@@ -18,38 +35,90 @@
 	}
 
 	.btn-primary {
-		@apply inline-flex items-center justify-center gap-2 rounded-md bg-golf px-5 py-2.5 text-sm font-semibold text-offwhite transition hover:bg-golf/90 focus:outline-none focus:ring-1 focus:ring-golf focus:ring-offset-1 focus:ring-offset-obsidian disabled:cursor-not-allowed disabled:opacity-40;
+		@apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40;
+		border-radius: var(--radius-card);
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+	}
+
+	.btn-primary:hover {
+		filter: brightness(1.08);
+	}
+
+	.btn-primary:focus-visible {
+		outline: 2px solid var(--color-focus);
+		outline-offset: 2px;
 	}
 
 	.btn-secondary {
-		@apply inline-flex items-center justify-center gap-2 rounded-md border border-border bg-transparent px-5 py-2.5 text-sm font-semibold text-offwhite transition hover:border-muted focus:outline-none focus:ring-1 focus:ring-border focus:ring-offset-1 focus:ring-offset-obsidian disabled:cursor-not-allowed disabled:opacity-40;
+		@apply inline-flex items-center justify-center gap-2 bg-transparent px-5 py-2.5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40;
+		border-radius: var(--radius-card);
+		border: var(--rule-hair) solid var(--color-rule-2);
+		color: var(--color-ink);
+	}
+
+	.btn-secondary:hover {
+		border-color: var(--color-muted);
+	}
+
+	.btn-secondary:focus-visible {
+		outline: 2px solid var(--color-focus);
+		outline-offset: 2px;
 	}
 
 	.btn-ghost {
-		@apply inline-flex items-center justify-center gap-2 rounded-md bg-transparent px-3 py-2 text-sm font-medium text-muted transition hover:text-offwhite;
+		@apply inline-flex items-center justify-center gap-2 bg-transparent px-3 py-2 text-sm font-medium transition;
+		color: var(--color-muted);
+	}
+
+	.btn-ghost:hover {
+		color: var(--color-ink);
+	}
+
+	.btn-ghost:focus-visible {
+		outline: 2px solid var(--color-focus);
+		outline-offset: 2px;
 	}
 
 	.card {
-		@apply min-w-0 rounded-md border border-border bg-graphite p-4 sm:p-5;
+		@apply min-w-0 p-4 sm:p-5;
+		border-radius: var(--radius-card);
+		border: var(--rule-hair) solid var(--color-rule);
+		background: var(--color-paper-2);
+		color: var(--color-ink);
 	}
 
 	.label {
-		@apply mb-2 block font-sans text-[11px] font-semibold uppercase tracking-wide text-muted sm:tracking-widest;
+		@apply mb-2 block text-[11px] font-medium;
+		color: var(--color-muted);
+		font-family: var(--font-body);
 	}
 
 	.section-title {
-		@apply font-display text-xl font-semibold tracking-tight text-offwhite;
+		font-family: var(--font-display);
+		font-size: var(--text-xl);
+		font-weight: 600;
+		letter-spacing: var(--tracking-display);
+		color: var(--color-ink);
 	}
 
 	.page-title {
-		@apply font-display text-2xl font-bold tracking-tight text-offwhite sm:text-3xl lg:text-4xl;
+		font-family: var(--font-display);
+		font-size: var(--text-display-s);
+		font-weight: var(--display-weight);
+		letter-spacing: var(--tracking-display);
+		color: var(--color-ink);
 	}
 
 	.metric-value {
-		@apply font-display text-3xl font-bold tabular-nums text-offwhite;
+		font-family: var(--font-display);
+		font-size: var(--text-3xl);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--color-ink);
 	}
 
 	.divider {
-		@apply border-t border-border;
+		border-top: var(--rule-hair) solid var(--color-rule);
 	}
 }

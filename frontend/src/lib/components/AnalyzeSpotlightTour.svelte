@@ -22,23 +22,23 @@
 	const steps: Step[] = [
 		{
 			target: '#tour-shot-type',
-			title: 'Jenis Pukulan',
-			body: 'Pilih jenis pukulan: Full Swing, Chip, Pitch, atau Putt. Ini menyesuaikan fokus metrik analisis dengan jenis shot Anda.'
+			title: 'Shot type',
+			body: 'Choose Full Swing, Chip, Pitch, or Putt. This tunes which metrics the analysis emphasizes for your shot.'
 		},
 		{
 			target: '#tour-club',
-			title: 'Jenis Club',
-			body: 'Pilih club yang dipakai (driver, iron, wedge, putter). Analisis memakai profil berbeda per kategori club.'
+			title: 'Club',
+			body: 'Select the club you used (driver, iron, wedge, putter). Analysis uses a different profile per club category.'
 		},
 		{
 			target: '#tour-upload',
-			title: 'Upload Video',
-			body: 'Seret atau pilih file video swing Anda (MP4/MOV, maks. 100 MB). Pastikan seluruh swing terlihat jelas di frame.'
+			title: 'Upload video',
+			body: 'Drop or choose your swing video (MP4/MOV, max 100 MB). Make sure the full swing is clearly in frame.'
 		},
 		{
 			target: '#tour-guide',
-			title: 'Panduan Rekaman',
-			body: 'Butuh tips posisi kamera, pencahayaan, dan durasi? Buka Panduan Rekaman kapan saja — atau ulangi tutorial ini.'
+			title: 'Recording guide',
+			body: 'Need camera setup, lighting, or duration tips? Open the recording guide anytime — or replay this tour.'
 		}
 	];
 
@@ -162,7 +162,7 @@
 				<div class="mb-3 flex items-start justify-between gap-3">
 					<div class="min-w-0">
 						<p class="text-[10px] font-bold uppercase tracking-widest text-highlight">
-							Langkah {step + 1} / {steps.length}
+							Step {step + 1} / {steps.length}
 						</p>
 						<h2 id="spotlight-title" class="mt-1 font-display text-base font-semibold text-offwhite">
 							{steps[step].title}
@@ -171,7 +171,7 @@
 					<button
 						type="button"
 						class="shrink-0 rounded-md p-1 text-muted transition hover:text-offwhite"
-						aria-label="Tutup"
+						aria-label="Close"
 						onclick={skip}
 					>
 						<Icon icon={X} size={16} />
@@ -186,7 +186,7 @@
 							type="button"
 							class="h-1.5 rounded-full transition-all
 								{i === step ? 'w-5 bg-golf' : 'w-1.5 bg-border hover:bg-muted'}"
-							aria-label="Ke langkah {i + 1}"
+							aria-label="Go to step {i + 1}"
 							onclick={() => (step = i)}
 						></button>
 					{/each}
@@ -196,14 +196,14 @@
 					{#if !isFirst}
 						<button type="button" class="btn-secondary text-xs" onclick={prev}>
 							<Icon icon={ChevronLeft} size={14} />
-							Kembali
+							Back
 						</button>
 					{/if}
 
 					{#if isLast}
 						<button type="button" class="btn-secondary text-xs" onclick={restart}>
 							<Icon icon={RotateCcw} size={14} />
-							Ulangi
+							Restart
 						</button>
 						{#if onopenGuide}
 							<button
@@ -214,16 +214,16 @@
 									onopenGuide();
 								}}
 							>
-								Buka Panduan
+								Open guide
 							</button>
 						{/if}
 						<button type="button" class="btn-primary ml-auto text-xs" onclick={() => onclose?.()}>
-							Selesai
+							Done
 						</button>
 					{:else}
-						<button type="button" class="btn-ghost ml-auto text-xs" onclick={skip}>Lewati</button>
+						<button type="button" class="btn-ghost ml-auto text-xs" onclick={skip}>Skip</button>
 						<button type="button" class="btn-primary text-xs" onclick={next}>
-							Lanjut
+							Next
 							<Icon icon={ChevronRight} size={14} />
 						</button>
 					{/if}

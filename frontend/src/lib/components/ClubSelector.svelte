@@ -7,7 +7,7 @@
 		onchange?: (club: ClubType) => void;
 	}
 
-	let { value = $bindable('iron_7' as ClubType), onchange }: Props = $props();
+	let { value = $bindable('driver' as ClubType), onchange }: Props = $props();
 
 	const categories = [
 		{ key: 'woods', label: 'Woods' },

@@ -1,198 +1,406 @@
-<section class="relative overflow-hidden border-b border-border">
-	<!-- Hero background: golfer figure, right-aligned -->
-	<div class="pointer-events-none absolute inset-0" aria-hidden="true">
+<section class="land-hero">
+	<div class="land-hero__media" aria-hidden="true">
 		<img
 			src="/hero/golfer.jpeg"
 			alt=""
-			class="absolute inset-0 h-full w-full object-cover object-[75%_center] sm:object-right"
+			class="land-hero__photo"
 			fetchpriority="high"
 		/>
-		<div
-			class="absolute inset-0 bg-gradient-to-r from-obsidian from-35% via-obsidian/90 via-55% to-obsidian/25 to-100% sm:from-40% sm:via-obsidian/75 sm:to-transparent"
-		></div>
-		<div class="absolute inset-0 bg-gradient-to-t from-obsidian via-transparent to-obsidian/50"></div>
+		<div class="land-hero__veil land-hero__veil--x"></div>
+		<div class="land-hero__veil land-hero__veil--y"></div>
 	</div>
 
-	<div class="container-page relative z-10 py-12 sm:py-16 lg:min-h-[32rem] lg:py-24">
-		<div class="grid w-full min-w-0 items-end gap-10 lg:grid-cols-12 lg:gap-16">
-			<div class="min-w-0 lg:col-span-7">
-				<p class="label mb-4">Swing Analysis</p>
-				<h1 class="page-title leading-none">
-					Ukur.<br />
-					Analisis.<br />
-					<span class="text-highlight">Perbaiki.</span>
-				</h1>
-				<p class="mt-6 max-w-md text-sm leading-relaxed text-muted">
-					Alat analisis performa swing golf berbasis pose detection. Upload video, konfigurasi
-					club, dan dapatkan metrik terukur beserta rekomendasi perbaikan.
-				</p>
-
-				<div class="mt-8 sm:mt-10">
-					<a href="/analyze" class="cta-swing group">
-						<span class="cta-swing__scene" aria-hidden="true">
-							<img src="/hero/golf-hit.gif" alt="" class="cta-swing__gif" width="72" height="72" />
-						</span>
-						<span class="cta-swing__label">
-							<span class="cta-swing__title">Analisis Swing</span>
-							<span class="cta-swing__hint">Upload video</span>
-						</span>
-					</a>
-				</div>
-			</div>
-		</div>
+	<div class="land-shell land-hero__copy">
+		<h1>Swing metrics from your video</h1>
+		<p class="lead land-hero__lead">
+			Upload a clip, set the club, get scored metrics.
+		</p>
+		<a href="/analyze" class="land-cta">
+			<span class="land-cta__scene" aria-hidden="true">
+				<img src="/hero/golf-hit.gif" alt="" class="land-cta__gif" width="72" height="72" />
+			</span>
+			<span class="land-cta__text">Analyze Swing</span>
+		</a>
 	</div>
 </section>
 
-<section class="relative overflow-hidden border-t border-border">
-	<div class="pointer-events-none absolute inset-0" aria-hidden="true">
+<section class="land-steps">
+	<div class="land-steps__media" aria-hidden="true">
 		<img
 			src="/process/driving-range.jpeg"
 			alt=""
-			class="absolute inset-0 h-full w-full object-cover object-center"
+			class="land-steps__photo"
 			loading="lazy"
 		/>
-		<div class="absolute inset-0 bg-obsidian/35"></div>
-		<div class="absolute inset-0 bg-gradient-to-b from-obsidian/50 via-transparent to-obsidian/40"></div>
+		<div class="land-steps__veil"></div>
 	</div>
 
-	<div class="container-page relative z-10 py-12 sm:py-16">
-		<p class="label mb-6 sm:mb-8">Proses</p>
-		<div class="grid w-full min-w-0 gap-px border border-border bg-border sm:grid-cols-3">
+	<div class="land-shell land-steps__body">
+		<h2>How a session runs</h2>
+		<ol class="land-list">
 			{#each [
 				{
 					step: '01',
-					title: 'Rekam',
-					desc: 'Video 3–8 detik dari samping. Kamera setinggi pinggang, jarak 2–3 meter.'
+					title: 'Record',
+					desc: 'Film 3–8 seconds from the side. Camera at waist height, 2–3 meters away.'
 				},
 				{
 					step: '02',
-					title: 'Konfigurasi',
-					desc: 'Pilih club dan jenis pukulan agar analisis sesuai konteks swing Anda.'
+					title: 'Configure',
+					desc: 'Select your club and shot type so the analysis matches your swing context.'
 				},
 				{
 					step: '03',
 					title: 'Review',
-					desc: 'Lihat skor, metrik detail, dan rekomendasi perbaikan yang dapat ditindaklanjuti.'
+					desc: 'See your score, detailed metrics, and actionable improvement recommendations.'
 				}
 			] as item}
-				<div class="min-w-0 bg-graphite p-5 sm:p-6">
-					<p class="font-display text-2xl font-bold text-border">{item.step}</p>
-					<h3 class="mt-3 font-display text-sm font-semibold uppercase tracking-wide text-offwhite">
-						{item.title}
-					</h3>
-					<p class="mt-2 text-sm leading-relaxed text-muted">{item.desc}</p>
-				</div>
+				<li class="land-list__row">
+					<span class="land-list__num num" aria-hidden="true">{item.step}</span>
+					<div class="land-list__copy">
+						<h3>{item.title}</h3>
+						<p>{item.desc}</p>
+					</div>
+				</li>
 			{/each}
-		</div>
+		</ol>
 	</div>
 </section>
 
-<section class="container-page pb-12 sm:pb-20">
-	<div
-		class="flex w-full min-w-0 flex-col items-start justify-between gap-5 border border-border bg-graphite p-5 sm:flex-row sm:items-center sm:gap-6 sm:p-6"
-	>
-		<div class="min-w-0">
-			<p class="label">Siap Mulai</p>
-			<p class="font-display text-base font-semibold text-offwhite sm:text-lg">
-				Baca panduan rekaman sebelum sesi pertama.
-			</p>
-		</div>
-		<a href="/analyze" class="btn-primary w-full shrink-0 sm:w-auto">Mulai Sesi</a>
+<section class="land-close">
+	<div class="land-shell land-close__row">
+		<p class="land-close__text">
+			Read the recording guide before your first session.
+		</p>
+		<a href="/analyze" class="land-btn">Start Session</a>
 	</div>
 </section>
 
 <style>
-	.cta-swing {
+	.land-shell {
+		width: 100%;
+		max-width: var(--container);
+		margin-inline: auto;
+		padding-inline: var(--gutter);
+		box-sizing: border-box;
+		min-width: 0;
+	}
+
+	.land-hero {
 		position: relative;
+		overflow: clip;
+		border-bottom: var(--rule-hair) solid var(--color-rule);
+		min-height: min(32rem, 78dvh);
+		display: flex;
+		align-items: flex-end;
+	}
+
+	.land-hero__media {
+		pointer-events: none;
+		position: absolute;
+		inset: 0;
+	}
+
+	.land-hero__photo {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: 75% center;
+		max-width: none;
+	}
+
+	@media (min-width: 40rem) {
+		.land-hero__photo {
+			object-position: right center;
+		}
+	}
+
+	.land-hero__veil {
+		position: absolute;
+		inset: 0;
+	}
+
+	.land-hero__veil--x {
+		background: linear-gradient(
+			to right,
+			var(--color-paper) 0%,
+			color-mix(in oklab, var(--color-paper) 88%, transparent) 42%,
+			color-mix(in oklab, var(--color-paper) 35%, transparent) 68%,
+			transparent 100%
+		);
+	}
+
+	.land-hero__veil--y {
+		background: linear-gradient(
+			to top,
+			var(--color-paper) 0%,
+			transparent 45%,
+			color-mix(in oklab, var(--color-paper) 55%, transparent) 100%
+		);
+	}
+
+	.land-hero__copy {
+		position: relative;
+		z-index: var(--z-raised);
+		padding-block: var(--space-2xl) var(--space-3xl);
+		animation: land-settle var(--dur-long) var(--ease-out) both;
+	}
+
+	.land-hero__copy h1 {
+		max-width: 14ch;
+		font-size: var(--text-display);
+		font-weight: var(--display-weight);
+		letter-spacing: var(--tracking-display);
+		color: var(--color-ink);
+		line-height: 1.02;
+		text-wrap: balance;
+		overflow-wrap: break-word;
+		min-width: 0;
+	}
+
+	.land-hero__lead {
+		margin-top: var(--space-lg);
+		max-width: 34ch;
+		color: var(--color-muted);
+	}
+
+	.land-cta {
+		margin-top: var(--space-xl);
 		display: inline-flex;
 		align-items: center;
-		gap: 1rem;
-		min-width: min(100%, 22rem);
-		padding: 0.85rem 1.25rem 0.85rem 0.85rem;
-		border-radius: 0.75rem;
-		background: #1e7a3d;
-		color: #f5f5f0;
+		gap: var(--space-md);
+		min-width: min(100%, 18rem);
+		padding: var(--space-sm) var(--space-lg) var(--space-sm) var(--space-sm);
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
 		text-decoration: none;
-		border: 1px solid rgba(245, 245, 240, 0.12);
+		border: var(--rule-hair) solid color-mix(in oklab, var(--color-ink) 12%, transparent);
 		transition:
-			transform 0.25s ease,
-			background-color 0.2s ease;
+			transform var(--dur-short) var(--ease-out),
+			filter var(--dur-short) var(--ease-out);
 	}
 
-	.cta-swing:hover,
-	.cta-swing:focus-visible {
-		transform: translateY(-3px) scale(1.02);
-		background: #186433;
-		outline: none;
+	.land-cta:hover {
+		transform: translateY(-2px);
+		filter: brightness(1.06);
 	}
 
-	.cta-swing:active {
-		transform: translateY(-1px) scale(1.01);
-		background: #14532d;
+	.land-cta:focus-visible {
+		outline: 2px solid var(--color-focus);
+		outline-offset: 3px;
 	}
 
-	.cta-swing__scene {
-		position: relative;
-		z-index: 1;
-		width: 4.25rem;
-		height: 4.25rem;
+	.land-cta:active {
+		transform: translateY(0);
+		filter: brightness(0.96);
+	}
+
+	.land-cta__scene {
+		width: 3.75rem;
+		height: 3.75rem;
 		flex-shrink: 0;
-		background: transparent;
-		overflow: visible;
 		display: grid;
 		place-items: center;
+		background: transparent;
 	}
 
-	.cta-swing__gif {
+	.land-cta__gif {
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
-		display: block;
+		max-width: none;
 	}
 
-	.cta-swing__label {
-		position: relative;
-		z-index: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 0.15rem;
-		min-width: 0;
-		flex: 1;
-	}
-
-	.cta-swing__title {
-		font-family: var(--font-display, ui-sans-serif, system-ui);
-		font-size: 1.15rem;
+	.land-cta__text {
+		font-family: var(--font-display);
+		font-size: var(--text-lg);
 		font-weight: 700;
 		letter-spacing: -0.02em;
-		line-height: 1.2;
+		white-space: nowrap;
 	}
 
-	.cta-swing__hint {
-		font-size: 0.7rem;
-		font-weight: 500;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-		opacity: 0.75;
-	}
-
-	.cta-swing__arrow {
+	.land-steps {
 		position: relative;
-		z-index: 1;
-		font-size: 1.35rem;
-		font-weight: 600;
-		opacity: 0.85;
-		transition: transform 0.25s ease;
+		overflow: clip;
+		border-bottom: var(--rule-hair) solid var(--color-rule);
 	}
 
-	.cta-swing:hover .cta-swing__arrow,
-	.cta-swing:focus-visible .cta-swing__arrow {
-		transform: translateX(4px);
+	.land-steps__media {
+		pointer-events: none;
+		position: absolute;
+		inset: 0;
+	}
+
+	.land-steps__photo {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		max-width: none;
+	}
+
+	.land-steps__veil {
+		position: absolute;
+		inset: 0;
+		background: color-mix(in oklab, var(--color-paper) 72%, transparent);
+	}
+
+	.land-steps__body {
+		position: relative;
+		z-index: var(--z-raised);
+		padding-block: var(--section-gap-s);
+	}
+
+	.land-steps__body h2 {
+		font-size: var(--text-section);
+		font-weight: var(--display-weight);
+		letter-spacing: var(--tracking-display);
+		color: var(--color-ink);
+		margin-bottom: var(--space-xl);
+		max-width: 18ch;
+		text-wrap: balance;
+		overflow-wrap: break-word;
+		min-width: 0;
+	}
+
+	.land-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		border-top: var(--rule-hair) solid var(--color-rule);
+		background: color-mix(in oklab, var(--color-paper-2) 88%, transparent);
+	}
+
+	.land-list__row {
+		display: grid;
+		grid-template-columns: 3.5rem minmax(0, 1fr);
+		gap: var(--space-lg);
+		padding: var(--space-lg);
+		border-bottom: var(--rule-hair) solid var(--color-rule);
+		min-width: 0;
+	}
+
+	.land-list__num {
+		font-family: var(--font-display);
+		font-size: var(--text-2xl);
+		font-weight: 700;
+		line-height: 1;
+		color: var(--color-rule-2);
+		font-variant-numeric: tabular-nums;
+	}
+
+	.land-list__copy {
+		min-width: 0;
+	}
+
+	.land-list__copy h3 {
+		font-size: var(--text-title);
+		font-weight: 600;
+		letter-spacing: var(--tracking-display);
+		color: var(--color-ink);
+		max-width: none;
+	}
+
+	.land-list__copy p {
+		margin-top: var(--space-xs);
+		font-size: var(--text-sm);
+		line-height: 1.55;
+		color: var(--color-muted);
+		max-width: 48ch;
+	}
+
+	.land-close {
+		padding-block: var(--space-2xl) var(--section-gap-s);
+	}
+
+	.land-close__row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-lg);
+		padding: var(--space-lg) 0;
+		border-top: var(--rule-hair) solid var(--color-rule);
+		border-bottom: var(--rule-hair) solid var(--color-rule);
+	}
+
+	.land-close__text {
+		font-family: var(--font-display);
+		font-size: var(--text-title);
+		font-weight: 600;
+		letter-spacing: var(--tracking-display);
+		color: var(--color-ink);
+		max-width: 36ch;
+		min-width: 0;
+	}
+
+	.land-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		padding: 0.7rem 1.25rem;
+		background: transparent;
+		color: var(--color-ink);
+		border: var(--rule-hair) solid var(--color-rule-2);
+		font-family: var(--font-body);
+		font-size: var(--text-sm);
+		font-weight: 600;
+		text-decoration: none;
+		white-space: nowrap;
+		transition: border-color var(--dur-short) var(--ease-out);
+	}
+
+	.land-btn:hover {
+		border-color: var(--color-muted);
+	}
+
+	.land-btn:focus-visible {
+		outline: 2px solid var(--color-focus);
+		outline-offset: 3px;
+	}
+
+	.land-btn:active {
+		border-color: var(--color-ink);
+	}
+
+	@keyframes land-settle {
+		from {
+			opacity: 0.6;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.cta-swing__gif {
+		.land-hero__copy {
 			animation: none;
+		}
+
+		.land-cta,
+		.land-btn {
+			transition: none;
+		}
+
+		.land-cta:hover,
+		.land-cta:active {
+			transform: none;
+		}
+	}
+
+	@media (max-width: 40rem) {
+		.land-close__row {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.land-btn {
+			width: 100%;
 		}
 	}
 </style>

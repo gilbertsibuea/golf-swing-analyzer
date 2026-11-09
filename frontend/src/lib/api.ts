@@ -20,7 +20,7 @@ export async function uploadSwing(
 	const data = await response.json();
 
 	if (!response.ok) {
-		const message = data.error ?? 'Gagal menganalisis swing';
+		const message = data.error ?? 'Failed to analyze swing';
 		throw new Error(message);
 	}
 
