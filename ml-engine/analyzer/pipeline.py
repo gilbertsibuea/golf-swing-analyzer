@@ -147,22 +147,24 @@ class SwingAnalysisPipeline:
                 code="insufficient_pose_data",
             )
 
-        # Preliminary phases for club tip impact search (handedness + address/top/impact).
-        from analyzer.metrics.biomechanics import GolfBiomechanicsAnalyzer
+        club_result = None
+        if config.ENABLE_CLUB_TRACKING:
+            # Preliminary phases for club tip impact search (handedness + address/top/impact).
+            from analyzer.metrics.biomechanics import GolfBiomechanicsAnalyzer
 
-        prelim = GolfBiomechanicsAnalyzer(valid_poses, fps=meta.fps).analyze()
+            prelim = GolfBiomechanicsAnalyzer(valid_poses, fps=meta.fps).analyze()
 
-        club_result = run_stage(
-            StageId.TRACK_CLUB,
-            lambda: track_club(
-                video_path,
-                poses,
-                handedness=prelim.handedness,
-                phases=prelim.phases,
-                start_frame=trim.source_start_frame,
-                end_frame=trim.source_end_frame,
-            ),
-        )
+            club_result = run_stage(
+                StageId.TRACK_CLUB,
+                lambda: track_club(
+                    video_path,
+                    poses,
+                    handedness=prelim.handedness,
+                    phases=prelim.phases,
+                    start_frame=trim.source_start_frame,
+                    end_frame=trim.source_end_frame,
+                ),
+            )
 
         metrics = run_stage(
             StageId.COMPUTE_METRICS,
@@ -199,7 +201,7 @@ class SwingAnalysisPipeline:
                 end_frame=trim.source_end_frame,
                 slow_output_path=slow_path,
                 slowmo_factor=config.SLOWMO_REPEAT_FACTOR,
-                club_tracks=club_result.tracks,
+                club_tracks=club_result.tracks if club_result is not None else None,
             ),
         )
 

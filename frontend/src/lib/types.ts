@@ -254,7 +254,6 @@ export const ANALYSIS_STAGES = [
 	{ id: 'quality_check', label: 'Checking quality & camera angle' },
 	{ id: 'locate_swing', label: 'Finding the swing segment' },
 	{ id: 'extract_pose', label: 'Extracting pose per frame' },
-	{ id: 'track_club', label: 'Tracking the club' },
 	{ id: 'compute_metrics', label: 'Computing joint metrics' },
 	{ id: 'render_video', label: 'Rendering analysis video' },
 	{ id: 'score', label: 'Scoring & recommendations' }

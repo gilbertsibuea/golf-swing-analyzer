@@ -9,6 +9,8 @@ VIDEO_DIR = BASE_DIR / "video"
 MODEL_PATH = "yolov8n-pose.pt"
 # Custom YOLO clubhead weights (train via scripts/train_clubhead.py).
 CLUB_MODEL_PATH = BASE_DIR / "yolov8n-club.pt"
+# MVP: pose metrics only — clubhead YOLO/line tracking off until model is trained.
+ENABLE_CLUB_TRACKING = False
 
 # Video technical limits
 MIN_DURATION_SEC = 1.0

@@ -28,9 +28,7 @@
 
 	const slowmoFactor = $derived(report?.slowmo_factor ?? 4);
 
-	const hasNotesExtras = $derived(
-		Boolean(report?.validation || report?.trim?.applied || report?.metrics.club)
-	);
+	const hasNotesExtras = $derived(Boolean(report?.validation || report?.trim?.applied));
 
 	onMount(() => {
 		report = loadReport();
@@ -215,38 +213,6 @@
 							</p>
 						</div>
 					{/if}
-					{#if report.metrics.club}
-						<div class="mt-4 border-t border-border pt-4">
-							<p class="label mb-2">Club tracking</p>
-							<div class="flex flex-wrap gap-4 text-xs text-muted">
-								<span>Track score: {report.metrics.club.tracking_score}</span>
-								<span>Confidence: {(report.metrics.club.mean_confidence * 100).toFixed(0)}%</span>
-								<span>Detect rate: {(report.metrics.club.detection_rate * 100).toFixed(0)}%</span>
-								<span>Method: {report.metrics.club.method}</span>
-								{#if report.metrics.club.shaft_lean_impact_deg != null}
-									<span
-										>Shaft lean at impact: {report.metrics.club.shaft_lean_impact_deg.toFixed(
-											1
-										)}°</span
-									>
-								{/if}
-								{#if report.metrics.club.impact_refined}
-									<span class="text-highlight">Impact refined from club tip</span>
-								{/if}
-							</div>
-							<p class="mt-2 text-xs text-disabled">
-								Red overlay (grip → clubhead) only appears when YOLO/line detection is confident
-								enough. Misses on the downswing mean no fake line. Method: {report.metrics.club
-									.method}.
-								{#if !report.metrics.club.yolo_enabled}
-									{' '}Install yolov8n-club.pt (see datasets/clubhead/README.md) after manual
-									annotation.
-								{:else}
-									{' '}Improve the model: label frames in datasets/clubhead/to_label, then retrain.
-								{/if}
-							</p>
-						</div>
-					{/if}
 				{/if}
 			{/if}
 		</div>
@@ -260,7 +226,7 @@
 		>
 			<div class="card min-w-0">
 				<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<p class="label mb-0">Joint &amp; club tracking video</p>
+					<p class="label mb-0">Pose tracking video</p>
 					{#if report.annotated_video_slow_url}
 						<div class="flex gap-2">
 							<button
