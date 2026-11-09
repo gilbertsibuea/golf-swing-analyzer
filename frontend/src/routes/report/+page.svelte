@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { ChevronDown, ChevronUp } from 'lucide';
 	import DetailedMetrics from '$lib/components/DetailedMetrics.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import NextSwingFocus from '$lib/components/NextSwingFocus.svelte';
 	import SpiderChart from '$lib/components/SpiderChart.svelte';
 	import { getAnnotatedVideoUrl, loadReport } from '$lib/api';
@@ -12,6 +14,8 @@
 	let videoError = $state(false);
 	let videoRetry = $state(0);
 	let videoMode = $state<'normal' | 'slow'>('normal');
+	let showNotesInfo = $state(false);
+	let showMetricsDetail = $state(false);
 
 	const videoUrl = $derived.by(() => {
 		if (!report) return null;
@@ -23,6 +27,10 @@
 	});
 
 	const slowmoFactor = $derived(report?.slowmo_factor ?? 4);
+
+	const hasNotesExtras = $derived(
+		Boolean(report?.validation || report?.trim?.applied || report?.metrics.club)
+	);
 
 	onMount(() => {
 		report = loadReport();
@@ -138,97 +146,122 @@
 			</div>
 		</div>
 
-		<!-- Notes / Recommendation -->
+		<!-- Analysis notes (recommendation only; extras behind More info) -->
 		<div class="card mb-5 w-full min-w-0 sm:mb-6">
 			<p class="label">Analysis notes</p>
 			<p class="mt-3 text-sm leading-relaxed text-offwhite">{report.recommendation}</p>
-			{#if report.validation}
-				<div class="mt-4 border-t border-border pt-4">
-					<p class="label mb-2">Video quality</p>
-					<div class="flex flex-wrap gap-4 text-xs text-muted">
-						<span>Sharpness: {report.validation.sharpness.toFixed(0)}</span>
-						<span
-							>Joint visibility: {(report.validation.visible_keypoint_ratio * 100).toFixed(0)}%</span
-						>
-						<span>{report.validation.video.fps.toFixed(0)} fps</span>
-						<span
-							>{report.validation.video.duration_sec}s &middot; {report.validation.video
-								.frame_count} frames</span
-						>
-						<span>{report.metrics.frames_analyzed} frames analyzed</span>
-					</div>
-					{#if report.metrics.quality?.low_fps_warning}
-						<p class="mt-2 text-xs text-muted">
-							Video is under 45 fps — tempo and rotation metrics are less accurate. Re-record at 60
-							fps for better results.
-						</p>
+
+			{#if hasNotesExtras}
+				<button
+					type="button"
+					class="btn-secondary mt-4 text-xs"
+					aria-expanded={showNotesInfo}
+					onclick={() => (showNotesInfo = !showNotesInfo)}
+				>
+					{showNotesInfo ? 'Less info' : 'More info'}
+					<Icon icon={showNotesInfo ? ChevronUp : ChevronDown} size={14} />
+				</button>
+
+				{#if showNotesInfo}
+					{#if report.validation}
+						<div class="mt-4 border-t border-border pt-4">
+							<p class="label mb-2">Video quality</p>
+							<div class="flex flex-wrap gap-4 text-xs text-muted">
+								<span>Sharpness: {report.validation.sharpness.toFixed(0)}</span>
+								<span
+									>Joint visibility: {(report.validation.visible_keypoint_ratio * 100).toFixed(
+										0
+									)}%</span
+								>
+								<span>{report.validation.video.fps.toFixed(0)} fps</span>
+								<span
+									>{report.validation.video.duration_sec}s &middot; {report.validation.video
+										.frame_count} frames</span
+								>
+								<span>{report.metrics.frames_analyzed} frames analyzed</span>
+							</div>
+							{#if report.metrics.quality?.low_fps_warning}
+								<p class="mt-2 text-xs text-muted">
+									Video is under 45 fps — tempo and rotation metrics are less accurate. Re-record
+									at 60 fps for better results.
+								</p>
+							{/if}
+						</div>
 					{/if}
-				</div>
-			{/if}
-			{#if report.trim?.applied}
-				<div class="mt-4 border-t border-border pt-4">
-					<p class="label mb-2">Auto-trim swing segment</p>
-					<p class="text-sm text-offwhite">
-						Setup
-						<span class="font-semibold text-highlight"
-							>{report.trim.setup_trimmed_sec.toFixed(1)}s</span
-						>
-						removed &middot; analyzing
-						<span class="font-semibold"
-							>{report.trim.trimmed_start_sec.toFixed(1)}s – {report.trim.trimmed_end_sec.toFixed(
-								1
-							)}s</span
-						>
-						of {report.trim.original_duration_sec.toFixed(1)}s total
-					</p>
-					<p class="mt-2 text-xs text-muted">
-						Source frames: {report.trim.source_start_frame}–{report.trim.source_end_frame}
-						&middot; Address #{report.trim.address_frame_source}
-						&middot; Top #{report.trim.top_frame_source}
-						&middot; Impact #{report.trim.impact_frame_source}
-					</p>
-					<p class="mt-1 text-xs text-disabled">
-						Tracking video shows the trimmed segment only — not the full upload.
-					</p>
-				</div>
-			{/if}
-			{#if report.metrics.club}
-				<div class="mt-4 border-t border-border pt-4">
-					<p class="label mb-2">Club tracking</p>
-					<div class="flex flex-wrap gap-4 text-xs text-muted">
-						<span>Track score: {report.metrics.club.tracking_score}</span>
-						<span>Confidence: {(report.metrics.club.mean_confidence * 100).toFixed(0)}%</span>
-						<span>Detect rate: {(report.metrics.club.detection_rate * 100).toFixed(0)}%</span>
-						<span>Method: {report.metrics.club.method}</span>
-						{#if report.metrics.club.shaft_lean_impact_deg != null}
-							<span>Shaft lean at impact: {report.metrics.club.shaft_lean_impact_deg.toFixed(1)}°</span>
-						{/if}
-						{#if report.metrics.club.impact_refined}
-							<span class="text-highlight">Impact refined from club tip</span>
-						{/if}
-					</div>
-					<p class="mt-2 text-xs text-disabled">
-						Red overlay (grip → clubhead) only appears when YOLO/line detection is confident enough.
-						Misses on the downswing mean no fake line. Method: {report.metrics.club.method}.
-						{#if !report.metrics.club.yolo_enabled}
-							{' '}Install yolov8n-club.pt (see datasets/clubhead/README.md) after manual annotation.
-						{:else}
-							{' '}Improve the model: label frames in datasets/clubhead/to_label, then retrain.
-						{/if}
-					</p>
-				</div>
+					{#if report.trim?.applied}
+						<div class="mt-4 border-t border-border pt-4">
+							<p class="label mb-2">Auto-trim swing segment</p>
+							<p class="text-sm text-offwhite">
+								Setup
+								<span class="font-semibold text-highlight"
+									>{report.trim.setup_trimmed_sec.toFixed(1)}s</span
+								>
+								removed &middot; analyzing
+								<span class="font-semibold"
+									>{report.trim.trimmed_start_sec.toFixed(1)}s – {report.trim.trimmed_end_sec.toFixed(
+										1
+									)}s</span
+								>
+								of {report.trim.original_duration_sec.toFixed(1)}s total
+							</p>
+							<p class="mt-2 text-xs text-muted">
+								Source frames: {report.trim.source_start_frame}–{report.trim.source_end_frame}
+								&middot; Address #{report.trim.address_frame_source}
+								&middot; Top #{report.trim.top_frame_source}
+								&middot; Impact #{report.trim.impact_frame_source}
+							</p>
+							<p class="mt-1 text-xs text-disabled">
+								Tracking video shows the trimmed segment only — not the full upload.
+							</p>
+						</div>
+					{/if}
+					{#if report.metrics.club}
+						<div class="mt-4 border-t border-border pt-4">
+							<p class="label mb-2">Club tracking</p>
+							<div class="flex flex-wrap gap-4 text-xs text-muted">
+								<span>Track score: {report.metrics.club.tracking_score}</span>
+								<span>Confidence: {(report.metrics.club.mean_confidence * 100).toFixed(0)}%</span>
+								<span>Detect rate: {(report.metrics.club.detection_rate * 100).toFixed(0)}%</span>
+								<span>Method: {report.metrics.club.method}</span>
+								{#if report.metrics.club.shaft_lean_impact_deg != null}
+									<span
+										>Shaft lean at impact: {report.metrics.club.shaft_lean_impact_deg.toFixed(
+											1
+										)}°</span
+									>
+								{/if}
+								{#if report.metrics.club.impact_refined}
+									<span class="text-highlight">Impact refined from club tip</span>
+								{/if}
+							</div>
+							<p class="mt-2 text-xs text-disabled">
+								Red overlay (grip → clubhead) only appears when YOLO/line detection is confident
+								enough. Misses on the downswing mean no fake line. Method: {report.metrics.club
+									.method}.
+								{#if !report.metrics.club.yolo_enabled}
+									{' '}Install yolov8n-club.pt (see datasets/clubhead/README.md) after manual
+									annotation.
+								{:else}
+									{' '}Improve the model: label frames in datasets/clubhead/to_label, then retrain.
+								{/if}
+							</p>
+						</div>
+					{/if}
+				{/if}
 			{/if}
 		</div>
 
 		<!-- Next swing focus -->
 		<NextSwingFocus {report} />
 
-		<!-- Annotated video -->
-		{#if videoUrl}
-			<div class="card mb-5 w-full min-w-0 sm:mb-6">
+		<!-- Video (80%) + metric scores (20%) -->
+		<div
+			class="mb-5 grid w-full min-w-0 gap-5 sm:mb-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,1fr)]"
+		>
+			<div class="card min-w-0">
 				<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<p class="label">Joint &amp; club tracking video</p>
-					{#if report?.annotated_video_slow_url}
+					<p class="label mb-0">Joint &amp; club tracking video</p>
+					{#if report.annotated_video_slow_url}
 						<div class="flex gap-2">
 							<button
 								type="button"
@@ -247,47 +280,75 @@
 						</div>
 					{/if}
 				</div>
-				<div class="overflow-hidden border border-border bg-obsidian">
-					{#if videoError}
-						<div
-							class="flex min-h-48 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-muted"
-						>
-							<p>Video could not play. Make sure the backend is running, then try again.</p>
-							<div class="flex flex-wrap justify-center gap-2">
-								<button type="button" class="btn-secondary text-xs" onclick={retryVideo}>
-									Retry playback
-								</button>
-								<a href={videoUrl} class="btn-secondary text-xs" target="_blank" rel="noopener">
-									Open video directly
-								</a>
-							</div>
-						</div>
-					{:else}
-						{#key `${videoUrl}-${videoRetry}`}
-							<video
-								src={videoUrl}
-								controls
-								playsinline
-								preload="metadata"
-								class="max-h-[32rem] w-full object-contain"
-								onerror={() => (videoError = true)}
-							></video>
-						{/key}
-					{/if}
-				</div>
-				<p class="mt-2 text-xs text-muted">
-					Green = skeleton &middot; bright dots = joints &middot; white line = motion trail
-					{#if videoMode === 'slow'}
-						&middot; slow motion {slowmoFactor}x @ {report?.validation?.video.fps.toFixed(0) ?? '—'} fps
-					{/if}
-				</p>
-			</div>
-		{/if}
 
-		<!-- Detailed metrics -->
-		<div class="w-full min-w-0">
-			<p class="label mb-3">Detailed metrics</p>
-			<DetailedMetrics metrics={report.metrics} />
+				{#if videoUrl}
+					<div class="overflow-hidden border border-border bg-obsidian">
+						{#if videoError}
+							<div
+								class="flex min-h-48 flex-col items-center justify-center gap-3 p-6 text-center text-sm text-muted"
+							>
+								<p>Video could not play. Make sure the backend is running, then try again.</p>
+								<div class="flex flex-wrap justify-center gap-2">
+									<button type="button" class="btn-secondary text-xs" onclick={retryVideo}>
+										Retry playback
+									</button>
+									<a href={videoUrl} class="btn-secondary text-xs" target="_blank" rel="noopener">
+										Open video directly
+									</a>
+								</div>
+							</div>
+						{:else}
+							{#key `${videoUrl}-${videoRetry}`}
+								<video
+									src={videoUrl}
+									controls
+									playsinline
+									preload="metadata"
+									class="max-h-[32rem] w-full object-contain"
+									onerror={() => (videoError = true)}
+								></video>
+							{/key}
+						{/if}
+					</div>
+					<p class="mt-2 text-xs text-muted">
+						Green = skeleton &middot; bright dots = joints &middot; white line = motion trail
+						{#if videoMode === 'slow'}
+							&middot; slow motion {slowmoFactor}x @ {report.validation?.video.fps.toFixed(0) ??
+								'—'} fps
+						{/if}
+					</p>
+				{:else}
+					<div
+						class="flex min-h-48 items-center justify-center border border-border bg-obsidian px-4 text-center text-sm text-muted"
+					>
+						Tracking video is not available for this session.
+					</div>
+				{/if}
+			</div>
+
+			<div class="card flex min-w-0 flex-col">
+				<p class="label mb-4">Detailed metrics</p>
+				<DetailedMetrics metrics={report.metrics} variant="scores" compact />
+			</div>
+		</div>
+
+		<!-- Metric deep-dive below video + scores -->
+		<div class="mb-5 w-full min-w-0 sm:mb-6">
+			<button
+				type="button"
+				class="btn-secondary text-xs"
+				aria-expanded={showMetricsDetail}
+				onclick={() => (showMetricsDetail = !showMetricsDetail)}
+			>
+				{showMetricsDetail ? 'Less info' : 'More info'}
+				<Icon icon={showMetricsDetail ? ChevronUp : ChevronDown} size={14} />
+			</button>
+
+			{#if showMetricsDetail}
+				<div class="mt-4">
+					<DetailedMetrics metrics={report.metrics} variant="detail" />
+				</div>
+			{/if}
 		</div>
 
 		<div class="mt-6 flex w-full flex-col gap-3 sm:mt-8 sm:flex-row">
