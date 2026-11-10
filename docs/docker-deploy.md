@@ -28,7 +28,7 @@ Weights are **baked into the ML image at build time** (not bind-mounted). They m
 rsync -avz --exclude node_modules --exclude venv --exclude .git \
   ./golf-swing-analyzer/ user@YOUR_VPS:~/golf-swing-analyzer/
 
-scp ml-engine/yolov8n-pose.pt ml-engine/yolov8n-club.pt \
+scp ml-engine/yolov8n-pose.pt \
   user@YOUR_VPS:~/golf-swing-analyzer/ml-engine/
 ```
 
@@ -77,8 +77,26 @@ docker compose down -v   # also remove annotated-video volume
 
 - Analysis can take several minutes on CPU; nginx `proxy_read_timeout` is 300s.
 - Annotated videos persist in Docker volume `ml_output`.
-- Do **not** ship `datasets/` / Label Studio training data to the VPS — inference only needs `*.pt`.
+- Inference only needs `yolov8n-pose.pt` (clubhead tracking was removed from the MVP).
 - For HTTPS: put Caddy/Certbot or Cloudflare in front of nginx, or replace nginx with a TLS-terminating reverse proxy.
+
+## 7. Disk size (why rebuilds look huge)
+
+| What | Typical size | Notes |
+|------|--------------|--------|
+| Project on disk | ~100–150 MB | Code + `yolov8n-pose.pt` (~7 MB). |
+| `golf-swing-ml` image | ~3 GB | **PyTorch CPU + ultralytics** — this is normal for YOLO. |
+| Docker **build cache** | can grow to **8–12 GB** | Intermediate layers from `pip install torch`. Reclaim with prune. |
+
+After each deploy, prune cache (also done by `scripts/deploy-vps.sh`):
+
+```bash
+docker builder prune -af
+docker image prune -f
+df -h /
+```
+
+If disk spikes after rebuild, it is almost always Docker build cache (PyTorch layers), not app data.
 
 ## Troubleshooting
 
@@ -97,8 +115,8 @@ docker compose down -v   # also remove annotated-video volume
    If Docker created empty dirs (host file was missing at first `up`):
    ```bash
    docker compose down
-   sudo rm -rf ml-engine/yolov8n-pose.pt ml-engine/yolov8n-club.pt
-   # scp real .pt files back into ml-engine/
+   sudo rm -rf ml-engine/yolov8n-pose.pt
+   # scp real yolov8n-pose.pt back into ml-engine/
    docker compose up -d --build
    ```
 3. Low RAM (OOM kill): VPS needs ~2–4 GB free. Check `dmesg | tail` / `docker inspect` ExitCode 137.

@@ -7,10 +7,6 @@ OUTPUT_DIR = BASE_DIR / "output"
 VIDEO_DIR = BASE_DIR / "video"
 
 MODEL_PATH = "yolov8n-pose.pt"
-# Custom YOLO clubhead weights (train via scripts/train_clubhead.py).
-CLUB_MODEL_PATH = BASE_DIR / "yolov8n-club.pt"
-# MVP: pose metrics only — clubhead YOLO/line tracking off until model is trained.
-ENABLE_CLUB_TRACKING = False
 
 # Video technical limits
 MIN_DURATION_SEC = 1.0
@@ -39,13 +35,8 @@ VALIDATION_SAMPLE_FRAMES = 12
 COLOR_SKELETON = (61, 122, 30)       # #1E7A3D
 COLOR_JOINT = (161, 227, 166)        # #A6E3A1
 COLOR_TRAIL = (200, 200, 232)        # subtle off-white trail
-COLOR_CLUB = (0, 0, 255)             # red shaft (BGR)
-COLOR_CLUB_TIP = (0, 40, 255)        # bright red tip
-COLOR_CLUB_TRAIL = (40, 40, 220)     # red tip path trail
 SKELETON_THICKNESS = 2
 JOINT_RADIUS = 4
-CLUB_SHAFT_THICKNESS = 3
-CLUB_TIP_RADIUS = 6
 
 # Annotated output: repeat each frame N times at the same fps (smooth slow motion).
 SLOWMO_REPEAT_FACTOR = 4

@@ -7,7 +7,6 @@ from typing import Any
 
 import numpy as np
 
-from analyzer.club_track import ClubTrackResult, refine_phases_with_club, score_club_tracking
 from analyzer.keypoints import ANGLE_TRIPLETS, DISTANCE_PAIRS
 from analyzer.metrics.biomechanics import (
     BIOMECHANICS_MIN_CONFIDENCE,
@@ -96,10 +95,9 @@ def _pack_metrics(
     valid_poses: list[FramePose],
     profile: TuningProfile | None,
     fps: float | None,
-    club: ClubTrackResult | None = None,
 ) -> dict[str, Any]:
     min_conf = BIOMECHANICS_MIN_CONFIDENCE
-    payload: dict[str, Any] = {
+    return {
         "summary": summary,
         "biomechanics": biomechanics_to_dict(bio),
         "posture": {
@@ -148,34 +146,12 @@ def _pack_metrics(
         "metrics_focus": list(profile.metrics_focus) if profile else [],
     }
 
-    if club is not None:
-        club_score = score_club_tracking(club)
-        wrist_impact = getattr(club, "_wrist_impact_before_refine", bio.impact_frame)
-        payload["club"] = {
-            **club.to_dict(),
-            "tracking_score": club_score,
-            "wrist_impact_frame": wrist_impact,
-            "club_impact_frame": club.impact_frame_hint,
-            "impact_refined": bool(
-                club.impact_frame_hint is not None
-                and abs(int(wrist_impact) - bio.impact_frame) >= 1
-            ),
-            "final_impact_frame": bio.impact_frame,
-        }
-        if club.impact_frame_hint is not None and abs(int(wrist_impact) - bio.impact_frame) >= 1:
-            payload["tempo"]["impact_source"] = "club_tip"
-        else:
-            payload["tempo"]["impact_source"] = "wrist"
-
-    return payload
-
 
 def compute_all_metrics(
     poses: list[FramePose],
     profile: TuningProfile | None = None,
     phase_hints: SwingPhases | None = None,
     fps: float | None = None,
-    club: ClubTrackResult | None = None,
 ) -> dict[str, Any]:
     valid_poses = [p for p in poses if PoseExtractor.visible_ratio(p) > 0.3]
     if not valid_poses:
@@ -183,15 +159,5 @@ def compute_all_metrics(
 
     analyzer = GolfBiomechanicsAnalyzer(valid_poses, fps=fps)
     bio = analyzer.analyze(phase_hints=phase_hints)
-
-    if club is not None and club.impact_frame_hint is not None:
-        wrist_impact = bio.phases.impact
-        refined = refine_phases_with_club(bio.phases, club)
-        if refined.impact != bio.phases.impact:
-            bio = analyzer.reanalyze_with_phases(refined)
-            if club.mean_confidence >= 0.35 and club.detection_rate >= 0.2:
-                bio.tempo_confidence = round(min(1.0, bio.tempo_confidence + 0.08), 3)
-        club._wrist_impact_before_refine = wrist_impact  # type: ignore[attr-defined]
-
     summary = biomechanics_to_summary(bio)
-    return _pack_metrics(bio, summary, valid_poses, profile, fps, club=club)
+    return _pack_metrics(bio, summary, valid_poses, profile, fps)

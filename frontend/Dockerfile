@@ -4,9 +4,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN npm run build && npm prune --omit=dev
 
-# Run (SvelteKit adapter-node)
+# Run (SvelteKit adapter-node) — production deps only
 FROM node:22-alpine
 WORKDIR /app
 ENV NODE_ENV=production \

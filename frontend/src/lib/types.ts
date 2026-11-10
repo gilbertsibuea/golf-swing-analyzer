@@ -97,23 +97,6 @@ export interface SwingMetrics {
 		lead_arm_straightness_impact_deg?: number;
 		handedness?: string;
 	};
-	club?: {
-		method: string;
-		yolo_enabled: boolean;
-		impact_frame_hint: number | null;
-		shaft_lean_impact_deg: number | null;
-		path_smoothness: number;
-		mean_confidence: number;
-		detection_rate: number;
-		proxy_rate: number;
-		frames_tracked: number;
-		frames_total: number;
-		tracking_score: number;
-		wrist_impact_frame?: number;
-		club_impact_frame?: number | null;
-		final_impact_frame?: number;
-		impact_refined?: boolean;
-	};
 	quality?: {
 		detection_quality: number;
 		min_keypoint_confidence: number;

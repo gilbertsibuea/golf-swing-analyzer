@@ -9,4 +9,7 @@ scripts
 video
 *.md
 .git
-# Keep yolov8n*.pt in the image (do NOT ignore them)
+# Only bake pose weights (clubhead tracking removed)
+yolov8n.pt
+yolov8n-club.pt
+# Keep yolov8n-pose.pt in the image

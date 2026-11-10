@@ -11,6 +11,8 @@ ml-engine/datasets
 ml-engine/runs
 ml-engine/scripts
 ml-engine/video
+ml-engine/yolov8n.pt
+ml-engine/yolov8n-club.pt
 docs
 style
 *.md
