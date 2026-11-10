@@ -4,14 +4,16 @@ Stack:
 
 | Service   | Role                          | Internal |
 |-----------|-------------------------------|----------|
-| nginx     | Public entry (`:80`)          | → frontend + backend |
+| nginx     | Public entry (`:80` / `:443`) | → frontend + backend |
 | frontend  | SvelteKit (adapter-node)      | `:3000` |
 | backend   | Go Fiber API                  | `:3000` |
 | ml-engine | FastAPI + YOLOv8              | `:8000` |
 
-Browser → `http://YOUR_VPS/` → nginx  
+Browser → `https://golf.gilbertsibuea.id/` → nginx  
 `/api/*` → backend → ml-engine  
 `/outputs/*` → backend → ml-engine static files  
+
+TLS: Let's Encrypt via `certbot` + webroot (see § HTTPS below). 
 
 ## 1. Prerequisites on VPS
 
@@ -55,14 +57,28 @@ docker compose ps
 docker compose logs -f ml-engine   # first boot can take a while
 ```
 
-Open: `http://YOUR_VPS_IP/` (or `http://YOUR_VPS_IP:$HTTP_PORT`)
+Open: `https://golf.gilbertsibuea.id/` (or `http://YOUR_VPS_IP/` over plain HTTP)
 
 Health:
 
 ```bash
+curl -s https://golf.gilbertsibuea.id/api/health
 curl -s http://127.0.0.1/api/health   # via nginx → backend
 docker compose exec ml-engine curl -s http://127.0.0.1:8000/health
 ```
+
+## HTTPS (Let's Encrypt)
+
+DNS A record must point at the VPS (`golf.gilbertsibuea.id` → server IP). Then:
+
+```bash
+cd /opt/projects/golf   # or your VPS_PATH
+chmod +x scripts/setup-ssl.sh
+./scripts/setup-ssl.sh
+# optional: CERTBOT_EMAIL=you@example.com ./scripts/setup-ssl.sh
+```
+
+This creates dummy certs → starts nginx → issues a real cert → reloads nginx → starts the renew loop.
 
 ## 5. Useful commands
 
@@ -78,7 +94,7 @@ docker compose down -v   # also remove annotated-video volume
 - Analysis can take several minutes on CPU; nginx `proxy_read_timeout` is 300s.
 - Annotated videos persist in Docker volume `ml_output`.
 - Inference only needs `yolov8n-pose.pt` (clubhead tracking was removed from the MVP).
-- For HTTPS: put Caddy/Certbot or Cloudflare in front of nginx, or replace nginx with a TLS-terminating reverse proxy.
+- HTTPS is terminated at nginx with Let's Encrypt (`scripts/setup-ssl.sh`).
 
 ## 7. Disk size (why rebuilds look huge)
 

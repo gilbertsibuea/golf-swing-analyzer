@@ -43,4 +43,5 @@ ssh "${VPS_HOST}" "cd ${VPS_PATH} && \
   df -h / && \
   curl -fsS http://127.0.0.1/api/health || true"
 
-echo "==> Done. Open http://203.194.113.61/"
+echo "==> Done. Open https://golf.gilbertsibuea.id/ (HTTP IP still works)"
+echo "    First-time TLS: ssh ${VPS_HOST} 'cd ${VPS_PATH} && ./scripts/setup-ssl.sh'"
