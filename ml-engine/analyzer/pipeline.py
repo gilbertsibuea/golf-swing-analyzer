@@ -63,8 +63,6 @@ class AnalysisResult:
     trim: dict[str, Any]
     stages: list[StageResult] = field(default_factory=list)
     annotated_video_url: str = ""
-    annotated_video_slow_url: str = ""
-    slowmo_factor: int = 1
     analysis_id: str = ""
 
 
@@ -165,9 +163,6 @@ class SwingAnalysisPipeline:
 
         output_filename = f"{analysis_id}.mp4"
         output_path = str(config.OUTPUT_DIR / output_filename)
-        slow_filename = f"{analysis_id}_slow.mp4"
-        slow_path = str(config.OUTPUT_DIR / slow_filename)
-        slowmo_factor = config.SLOWMO_REPEAT_FACTOR if config.GENERATE_SLOWMO else 1
 
         run_stage(
             StageId.RENDER_VIDEO,
@@ -180,8 +175,6 @@ class SwingAnalysisPipeline:
                 meta.fps,
                 start_frame=trim.source_start_frame,
                 end_frame=trim.source_end_frame,
-                slow_output_path=slow_path if slowmo_factor > 1 else None,
-                slowmo_factor=slowmo_factor,
             ),
         )
 
@@ -190,10 +183,6 @@ class SwingAnalysisPipeline:
             trim_dict["address_frame_in_trim"] = max(
                 0, trim.address_frame_source - trim.source_start_frame
             )
-
-        slow_url = f"/outputs/{slow_filename}" if slowmo_factor > 1 else ""
-        if slow_url and not (config.OUTPUT_DIR / slow_filename).exists():
-            slow_url = ""
 
         return AnalysisResult(
             status="success",
@@ -218,8 +207,6 @@ class SwingAnalysisPipeline:
             },
             stages=stages,
             annotated_video_url=f"/outputs/{output_filename}",
-            annotated_video_slow_url=slow_url,
-            slowmo_factor=slowmo_factor if slow_url else 1,
             analysis_id=analysis_id,
         )
 
@@ -275,7 +262,5 @@ class SwingAnalysisPipeline:
                 for s in result.stages
             ],
             "annotated_video_url": result.annotated_video_url,
-            "annotated_video_slow_url": result.annotated_video_slow_url,
-            "slowmo_factor": result.slowmo_factor,
             "analysis_id": result.analysis_id,
         }

@@ -52,19 +52,9 @@ def render_annotated_video(
     meta_fps: float,
     start_frame: int = 0,
     end_frame: int | None = None,
-    slow_output_path: str | None = None,
-    slowmo_factor: int = 1,
 ) -> None:
-    """
-    Draw overlays once, transcode to H.264 once.
-    Optional slowmo is derived from the final H.264 via ffmpeg setpts (not OpenCV repeats).
-    """
-    from analyzer.video_io import (
-        create_video_writer,
-        generate_slowmo_video,
-        iter_frames,
-        transcode_for_browser,
-    )
+    """Draw overlays once, then transcode to browser-friendly H.264."""
+    from analyzer.video_io import create_video_writer, iter_frames, transcode_for_browser
 
     writer = create_video_writer(output_path, meta_width, meta_height, meta_fps)
     trails: dict[int, deque] = {idx: deque(maxlen=20) for idx in TRAIL_JOINTS}
@@ -79,11 +69,3 @@ def render_annotated_video(
         writer.release()
 
     transcode_for_browser(output_path)
-
-    repeats = max(1, slowmo_factor)
-    if (
-        config.GENERATE_SLOWMO
-        and slow_output_path
-        and repeats > 1
-    ):
-        generate_slowmo_video(output_path, slow_output_path, repeats)

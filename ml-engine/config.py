@@ -42,9 +42,6 @@ COLOR_TRAIL = (200, 200, 232)        # subtle off-white trail
 SKELETON_THICKNESS = 2
 JOINT_RADIUS = 4
 
-# Annotated output: normal video first; slowmo via ffmpeg setpts (not OpenCV frame-repeat).
-SLOWMO_REPEAT_FACTOR = 4
-GENERATE_SLOWMO = True
 # H.264 encode after OpenCV write (visual only; does not affect metrics)
 FFMPEG_PRESET = "veryfast"
 FFMPEG_CRF = "23"

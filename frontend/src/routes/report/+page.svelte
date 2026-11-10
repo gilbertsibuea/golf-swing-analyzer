@@ -13,20 +13,13 @@
 	let ready = $state(false);
 	let videoError = $state(false);
 	let videoRetry = $state(0);
-	let videoMode = $state<'normal' | 'slow'>('normal');
 	let showNotesInfo = $state(false);
 	let showMetricsDetail = $state(false);
 
 	const videoUrl = $derived.by(() => {
-		if (!report) return null;
-		const path =
-			videoMode === 'slow' && report.annotated_video_slow_url
-				? report.annotated_video_slow_url
-				: report.annotated_video_url;
-		return path ? getAnnotatedVideoUrl(path) : null;
+		if (!report?.annotated_video_url) return null;
+		return getAnnotatedVideoUrl(report.annotated_video_url);
 	});
-
-	const slowmoFactor = $derived(report?.slowmo_factor ?? 4);
 
 	const hasNotesExtras = $derived(Boolean(report?.validation || report?.trim?.applied));
 
@@ -42,13 +35,6 @@
 	});
 
 	function retryVideo() {
-		videoError = false;
-		videoRetry += 1;
-	}
-
-	function setVideoMode(mode: 'normal' | 'slow') {
-		if (mode === videoMode) return;
-		videoMode = mode;
 		videoError = false;
 		videoRetry += 1;
 	}
@@ -225,27 +211,7 @@
 			class="mb-5 grid w-full min-w-0 gap-5 sm:mb-6 lg:grid-cols-[minmax(0,4fr)_minmax(0,1fr)]"
 		>
 			<div class="card min-w-0">
-				<div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-					<p class="label mb-0">Pose tracking video</p>
-					{#if report.annotated_video_slow_url}
-						<div class="flex gap-2">
-							<button
-								type="button"
-								class="text-xs {videoMode === 'normal' ? 'btn-primary' : 'btn-secondary'}"
-								onclick={() => setVideoMode('normal')}
-							>
-								Normal
-							</button>
-							<button
-								type="button"
-								class="text-xs {videoMode === 'slow' ? 'btn-primary' : 'btn-secondary'}"
-								onclick={() => setVideoMode('slow')}
-							>
-								Slow motion ({slowmoFactor}x)
-							</button>
-						</div>
-					{/if}
-				</div>
+				<p class="label mb-4">Pose tracking video</p>
 
 				{#if videoUrl}
 					<div class="overflow-hidden border border-border bg-obsidian">
@@ -278,10 +244,6 @@
 					</div>
 					<p class="mt-2 text-xs text-muted">
 						Green = skeleton &middot; bright dots = joints &middot; white line = motion trail
-						{#if videoMode === 'slow'}
-							&middot; slow motion {slowmoFactor}x @ {report.validation?.video.fps.toFixed(0) ??
-								'—'} fps
-						{/if}
 					</p>
 				{:else}
 					<div
