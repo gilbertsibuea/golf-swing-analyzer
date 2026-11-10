@@ -49,7 +49,13 @@
 	const isLast = $derived(step === steps.length - 1);
 	const isFirst = $derived(step === 0);
 
-	function measure() {
+	/** Smooth scroll feels sluggish on mobile Safari — snap instead. */
+	function preferInstantScroll() {
+		if (!browser) return true;
+		return window.matchMedia('(max-width: 768px), (prefers-reduced-motion: reduce)').matches;
+	}
+
+	function measureHole() {
 		if (!browser || !open) return;
 		const el = document.querySelector(steps[step].target) as HTMLElement | null;
 		if (!el) {
@@ -57,7 +63,7 @@
 			tipPos = null;
 			return;
 		}
-		el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+
 		const pad = 10;
 		const r = el.getBoundingClientRect();
 		hole = {
@@ -76,6 +82,28 @@
 		const top =
 			place === 'below' ? hole.top + hole.height + 12 : Math.max(12, hole.top - 12 - 160);
 		tipPos = { top, left, place };
+	}
+
+	function scrollToStep() {
+		if (!browser || !open) return;
+		const el = document.querySelector(steps[step].target) as HTMLElement | null;
+		if (!el) {
+			hole = null;
+			tipPos = null;
+			return;
+		}
+		el.scrollIntoView({
+			behavior: preferInstantScroll() ? 'auto' : 'smooth',
+			block: 'center',
+			inline: 'nearest'
+		});
+		// Instant: measure right away. Smooth (desktop): brief wait for settle.
+		if (preferInstantScroll()) {
+			measureHole();
+			requestAnimationFrame(measureHole);
+		} else {
+			window.setTimeout(measureHole, 120);
+		}
 	}
 
 	function next() {
@@ -112,13 +140,13 @@
 	$effect(() => {
 		if (!open) return;
 		step = 0;
-		const t = window.setTimeout(measure, 50);
-		const onScroll = () => measure();
-		window.addEventListener('resize', measure);
-		window.addEventListener('scroll', onScroll, true);
+		const t = window.setTimeout(scrollToStep, 16);
+		const onScroll = () => measureHole();
+		window.addEventListener('resize', measureHole);
+		window.addEventListener('scroll', onScroll, { capture: true, passive: true });
 		return () => {
 			clearTimeout(t);
-			window.removeEventListener('resize', measure);
+			window.removeEventListener('resize', measureHole);
 			window.removeEventListener('scroll', onScroll, true);
 		};
 	});
@@ -126,7 +154,7 @@
 	$effect(() => {
 		if (!open) return;
 		void step;
-		const t = window.setTimeout(measure, 80);
+		const t = window.setTimeout(scrollToStep, 16);
 		return () => clearTimeout(t);
 	});
 
@@ -143,7 +171,7 @@
 		{#if hole}
 			<!-- Spotlight cutout: dims everything outside the hole -->
 			<div
-				class="spotlight-hole pointer-events-none absolute rounded-lg transition-all duration-300 ease-out"
+				class="spotlight-hole pointer-events-none absolute rounded-lg transition-[top,left,width,height] duration-150 ease-out motion-reduce:transition-none max-md:duration-100"
 				style="top:{hole.top}px;left:{hole.left}px;width:{hole.width}px;height:{hole.height}px;"
 			></div>
 		{:else}
@@ -155,7 +183,7 @@
 
 		{#if tipPos}
 			<div
-				class="absolute z-[72] w-[min(22.5rem,calc(100vw-1.5rem))] rounded-md border border-border bg-graphite p-4 shadow-xl transition-all duration-300"
+				class="absolute z-[72] w-[min(22.5rem,calc(100vw-1.5rem))] rounded-md border border-border bg-graphite p-4 shadow-xl transition-[top,left,opacity] duration-150 ease-out motion-reduce:transition-none max-md:duration-100"
 				style="top:{tipPos.top}px;left:{tipPos.left}px;"
 				role="document"
 			>
@@ -184,7 +212,7 @@
 					{#each steps as _, i}
 						<button
 							type="button"
-							class="h-1.5 rounded-full transition-all
+							class="h-1.5 rounded-full transition-all duration-150
 								{i === step ? 'w-5 bg-golf' : 'w-1.5 bg-border hover:bg-muted'}"
 							aria-label="Go to step {i + 1}"
 							onclick={() => (step = i)}
