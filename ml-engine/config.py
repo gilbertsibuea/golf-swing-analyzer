@@ -8,6 +8,10 @@ VIDEO_DIR = BASE_DIR / "video"
 
 MODEL_PATH = "yolov8n-pose.pt"
 
+# Pose inference (quality unchanged at imgsz=640; batch speeds CPU)
+POSE_IMGSZ = 640
+POSE_BATCH_SIZE = 4  # keep small on 2GB VPS; raise on larger hosts
+
 # Video technical limits
 MIN_DURATION_SEC = 1.0
 MAX_DURATION_SEC = 30.0
@@ -38,5 +42,9 @@ COLOR_TRAIL = (200, 200, 232)        # subtle off-white trail
 SKELETON_THICKNESS = 2
 JOINT_RADIUS = 4
 
-# Annotated output: repeat each frame N times at the same fps (smooth slow motion).
+# Annotated output: normal video first; slowmo via ffmpeg setpts (not OpenCV frame-repeat).
 SLOWMO_REPEAT_FACTOR = 4
+GENERATE_SLOWMO = True
+# H.264 encode after OpenCV write (visual only; does not affect metrics)
+FFMPEG_PRESET = "veryfast"
+FFMPEG_CRF = "23"

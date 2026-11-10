@@ -238,6 +238,6 @@ export const ANALYSIS_STAGES = [
 	{ id: 'locate_swing', label: 'Finding the swing segment' },
 	{ id: 'extract_pose', label: 'Extracting pose per frame' },
 	{ id: 'compute_metrics', label: 'Computing joint metrics' },
-	{ id: 'render_video', label: 'Rendering analysis video' },
-	{ id: 'score', label: 'Scoring & recommendations' }
+	{ id: 'score', label: 'Scoring & recommendations' },
+	{ id: 'render_video', label: 'Rendering analysis video' }
 ];

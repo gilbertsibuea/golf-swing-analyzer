@@ -18,9 +18,8 @@ from analyzer.pose import FramePose, PoseExtractor
 from analyzer.scoring import score_swing
 from analyzer.swing_trim import TrimWindow, scout_trim_window
 from analyzer.tuning.loader import resolve_profile
-from analyzer.tuning.schema import TuningProfile
 from analyzer.validator import validate_video
-from analyzer.video_io import VideoMeta, iter_frames, read_video_meta
+from analyzer.video_io import read_video_meta
 
 
 class StageId(str, Enum):
@@ -29,8 +28,8 @@ class StageId(str, Enum):
     LOCATE_SWING = "locate_swing"
     EXTRACT_POSE = "extract_pose"
     COMPUTE_METRICS = "compute_metrics"
-    RENDER_VIDEO = "render_video"
     SCORE = "score"
+    RENDER_VIDEO = "render_video"
 
 
 STAGE_LABELS: dict[StageId, str] = {
@@ -39,8 +38,8 @@ STAGE_LABELS: dict[StageId, str] = {
     StageId.LOCATE_SWING: "Finding the swing segment",
     StageId.EXTRACT_POSE: "Extracting pose per frame",
     StageId.COMPUTE_METRICS: "Computing joint metrics",
-    StageId.RENDER_VIDEO: "Rendering analysis video",
     StageId.SCORE: "Scoring & recommendations",
+    StageId.RENDER_VIDEO: "Rendering analysis video",
 }
 
 
@@ -160,10 +159,15 @@ class SwingAnalysisPipeline:
             metrics["biomechanics"]["impact_frame_source"] = trim.impact_frame_source
             metrics["biomechanics"]["trim_start_frame_source"] = trim.source_start_frame
 
+        # Score before render so the long encode is not labeled as "Scoring"
+        score_data = run_stage(StageId.SCORE, lambda: score_swing(metrics, profile))
+        metrics["summary"] = score_data["summary"]
+
         output_filename = f"{analysis_id}.mp4"
         output_path = str(config.OUTPUT_DIR / output_filename)
         slow_filename = f"{analysis_id}_slow.mp4"
         slow_path = str(config.OUTPUT_DIR / slow_filename)
+        slowmo_factor = config.SLOWMO_REPEAT_FACTOR if config.GENERATE_SLOWMO else 1
 
         run_stage(
             StageId.RENDER_VIDEO,
@@ -176,19 +180,20 @@ class SwingAnalysisPipeline:
                 meta.fps,
                 start_frame=trim.source_start_frame,
                 end_frame=trim.source_end_frame,
-                slow_output_path=slow_path,
-                slowmo_factor=config.SLOWMO_REPEAT_FACTOR,
+                slow_output_path=slow_path if slowmo_factor > 1 else None,
+                slowmo_factor=slowmo_factor,
             ),
         )
-
-        score_data = run_stage(StageId.SCORE, lambda: score_swing(metrics, profile))
-        metrics["summary"] = score_data["summary"]
 
         trim_dict = trim.to_dict()
         if meta.fps > 0:
             trim_dict["address_frame_in_trim"] = max(
                 0, trim.address_frame_source - trim.source_start_frame
             )
+
+        slow_url = f"/outputs/{slow_filename}" if slowmo_factor > 1 else ""
+        if slow_url and not (config.OUTPUT_DIR / slow_filename).exists():
+            slow_url = ""
 
         return AnalysisResult(
             status="success",
@@ -213,8 +218,8 @@ class SwingAnalysisPipeline:
             },
             stages=stages,
             annotated_video_url=f"/outputs/{output_filename}",
-            annotated_video_slow_url=f"/outputs/{slow_filename}",
-            slowmo_factor=config.SLOWMO_REPEAT_FACTOR,
+            annotated_video_slow_url=slow_url,
+            slowmo_factor=slowmo_factor if slow_url else 1,
             analysis_id=analysis_id,
         )
 
@@ -224,9 +229,29 @@ class SwingAnalysisPipeline:
         start_frame: int,
         end_frame: int,
     ) -> list[FramePose | None]:
+        from analyzer.video_io import iter_frames
+
+        batch_size = max(1, config.POSE_BATCH_SIZE)
         poses: list[FramePose | None] = []
+        batch_frames: list = []
+        batch_indices: list[int] = []
+
+        def flush() -> None:
+            nonlocal batch_frames, batch_indices
+            if not batch_frames:
+                return
+            poses.extend(
+                self._pose.detect_batch(batch_frames, frame_indices=batch_indices)
+            )
+            batch_frames = []
+            batch_indices = []
+
         for i, frame in enumerate(iter_frames(video_path, start_frame, end_frame)):
-            poses.append(self._pose.detect(frame, i))
+            batch_frames.append(frame)
+            batch_indices.append(i)
+            if len(batch_frames) >= batch_size:
+                flush()
+        flush()
         return poses
 
     @staticmethod

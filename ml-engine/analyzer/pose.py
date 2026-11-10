@@ -21,17 +21,16 @@ class PoseExtractor:
     def __init__(self, model: YOLO | None = None):
         self._model = model or YOLO(config.MODEL_PATH)
 
-    def detect(self, frame: np.ndarray, frame_index: int = 0) -> FramePose | None:
-        results = self._model(frame, verbose=False)
-        if not results or results[0].keypoints is None:
+    def _result_to_pose(self, result, frame_index: int) -> FramePose | None:
+        if result is None or result.keypoints is None:
             return None
 
-        kpts_data = results[0].keypoints.data
+        kpts_data = result.keypoints.data
         if kpts_data is None or len(kpts_data) == 0:
             return None
 
         # Use the largest detected person (by bbox area)
-        boxes = results[0].boxes
+        boxes = result.boxes
         person_idx = 0
         if boxes is not None and len(boxes) > 1:
             areas = []
@@ -46,8 +45,41 @@ class PoseExtractor:
 
         return FramePose(frame_index=frame_index, keypoints=keypoints, bbox=bbox)
 
-    def detect_batch(self, frames: list[np.ndarray], start_index: int = 0) -> list[FramePose | None]:
-        return [self.detect(frame, start_index + i) for i, frame in enumerate(frames)]
+    def detect(self, frame: np.ndarray, frame_index: int = 0) -> FramePose | None:
+        results = self._model(
+            frame,
+            verbose=False,
+            imgsz=config.POSE_IMGSZ,
+            device="cpu",
+        )
+        if not results:
+            return None
+        return self._result_to_pose(results[0], frame_index)
+
+    def detect_batch(
+        self,
+        frames: list[np.ndarray],
+        start_index: int = 0,
+        frame_indices: list[int] | None = None,
+    ) -> list[FramePose | None]:
+        """Run YOLO on a batch of frames (real batched forward, not a Python loop)."""
+        if not frames:
+            return []
+
+        if frame_indices is not None and len(frame_indices) != len(frames):
+            raise ValueError("frame_indices length must match frames")
+
+        results = self._model(
+            frames,
+            verbose=False,
+            imgsz=config.POSE_IMGSZ,
+            device="cpu",
+        )
+        out: list[FramePose | None] = []
+        for i, result in enumerate(results):
+            idx = frame_indices[i] if frame_indices is not None else start_index + i
+            out.append(self._result_to_pose(result, idx))
+        return out
 
     @staticmethod
     def visible_ratio(pose: FramePose, min_conf: float = config.MIN_POSE_CONFIDENCE) -> float:

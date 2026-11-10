@@ -93,14 +93,29 @@ def scout_trim_window(
     then return padded [start, end] frame range for full analysis.
     """
     step = scan_step or config.TRIM_SCAN_STEP
+    batch_size = max(1, config.POSE_BATCH_SIZE)
     sparse_poses: list[FramePose] = []
+    batch_frames: list = []
+    batch_indices: list[int] = []
+
+    def flush_batch() -> None:
+        nonlocal batch_frames, batch_indices
+        if not batch_frames:
+            return
+        for pose in pose_extractor.detect_batch(batch_frames, frame_indices=batch_indices):
+            if pose is not None:
+                sparse_poses.append(pose)
+        batch_frames = []
+        batch_indices = []
 
     for i, frame in enumerate(iter_frames(video_path)):
         if i % step != 0:
             continue
-        pose = pose_extractor.detect(frame, i)
-        if pose is not None:
-            sparse_poses.append(pose)
+        batch_frames.append(frame)
+        batch_indices.append(i)
+        if len(batch_frames) >= batch_size:
+            flush_batch()
+    flush_batch()
 
     if len(sparse_poses) < 8:
         return TrimWindow.no_trim(meta)

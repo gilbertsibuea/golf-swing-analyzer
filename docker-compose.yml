@@ -10,9 +10,12 @@ services:
       - ml_output:/app/output
     environment:
       - PYTHONUNBUFFERED=1
+      # Keep threads low on small VPS to avoid RAM thrash; raise on ≥4GB hosts
       - OMP_NUM_THREADS=1
       - MKL_NUM_THREADS=1
-    mem_limit: 3g
+      - TORCH_NUM_THREADS=1
+    # Cap below host RAM so other containers (nginx/frontend) still fit on 2GB VPS
+    mem_limit: 1536m
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
       interval: 15s

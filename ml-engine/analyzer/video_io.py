@@ -153,8 +153,8 @@ def transcode_for_browser(path: str) -> str:
         "-c:v", "libx264",
         "-profile:v", "baseline",
         "-level", "3.1",
-        "-preset", "fast",
-        "-crf", "23",
+        "-preset", config.FFMPEG_PRESET,
+        "-crf", str(config.FFMPEG_CRF),
         "-pix_fmt", "yuv420p",
         "-movflags", "+faststart",
         "-an",
@@ -174,6 +174,49 @@ def transcode_for_browser(path: str) -> str:
             )
         os.replace(temp_path, path)
         return path
+    except FileNotFoundError:
+        raise ValidationError(
+            "ffmpeg tidak ditemukan. Install ffmpeg agar video analisis dapat diputar di browser.",
+            code="ffmpeg_missing",
+        ) from None
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+
+
+def generate_slowmo_video(input_path: str, output_path: str, factor: int) -> str:
+    """
+    Build a slow-motion sibling via ffmpeg setpts (no OpenCV frame-repeat + re-encode).
+    Playback duration ≈ factor × original; metrics/analysis quality unchanged.
+    """
+    repeats = max(1, int(factor))
+    if repeats <= 1:
+        return input_path
+
+    temp_path = f"{output_path}.tmp.mp4"
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error",
+        "-i", input_path,
+        "-filter:v", f"setpts={repeats}*PTS",
+        "-c:v", "libx264",
+        "-profile:v", "baseline",
+        "-level", "3.1",
+        "-preset", config.FFMPEG_PRESET,
+        "-crf", str(config.FFMPEG_CRF),
+        "-pix_fmt", "yuv420p",
+        "-movflags", "+faststart",
+        "-an",
+        temp_path,
+    ]
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        if result.returncode != 0:
+            raise ValidationError(
+                f"Slowmo encode gagal: {result.stderr.strip() or 'ffmpeg error'}",
+                code="transcode_failed",
+            )
+        os.replace(temp_path, output_path)
+        return output_path
     except FileNotFoundError:
         raise ValidationError(
             "ffmpeg tidak ditemukan. Install ffmpeg agar video analisis dapat diputar di browser.",

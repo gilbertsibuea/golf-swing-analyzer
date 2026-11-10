@@ -8,7 +8,7 @@ import numpy as np
 
 import config
 from analyzer.exceptions import ValidationError
-from analyzer.pose import PoseExtractor
+from analyzer.pose import FramePose, PoseExtractor
 from analyzer.tuning.schema import ValidationTuning
 from analyzer.video_io import (
     VideoMeta,
@@ -59,17 +59,28 @@ def validate_video(
             code="video_blurry",
         )
 
+    # One YOLO pass per sample frame (chunked batches) — reuse for visibility + camera angle
+    poses: list[FramePose | None] = []
+    batch_size = max(1, config.POSE_BATCH_SIZE)
+    for start in range(0, len(frames), batch_size):
+        chunk = frames[start : start + batch_size]
+        poses.extend(pose_extractor.detect_batch(chunk, start_index=start))
+
     visible_ratios: list[float] = []
     height_ratios: list[float] = []
+    side_scores: list[bool] = []
     poses_found = 0
 
-    for frame in frames:
-        pose = pose_extractor.detect(frame)
+    for pose in poses:
         if pose is None:
             continue
         poses_found += 1
         visible_ratios.append(PoseExtractor.visible_ratio(pose, vt.min_pose_confidence))
         height_ratios.append(PoseExtractor.person_height_ratio(pose, meta.height))
+        kp = pose.keypoints
+        side_scores.append(
+            min(kp[5, 2], kp[6, 2], kp[11, 2], kp[12, 2]) >= vt.min_pose_confidence
+        )
 
     if poses_found == 0:
         raise ValidationError(
@@ -89,16 +100,6 @@ def validate_video(
         raise ValidationError(
             "Golfer terlalu kecil dalam frame. Dekatkan kamera atau zoom agar tubuh memenuhi frame.",
             code="subject_too_small",
-        )
-
-    side_scores = []
-    for frame in frames:
-        pose = pose_extractor.detect(frame)
-        if pose is None:
-            continue
-        kp = pose.keypoints
-        side_scores.append(
-            min(kp[5, 2], kp[6, 2], kp[11, 2], kp[12, 2]) >= vt.min_pose_confidence
         )
 
     if side_scores and float(np.mean(side_scores)) < vt.min_side_view_score:

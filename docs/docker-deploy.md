@@ -92,9 +92,11 @@ docker compose down -v   # also remove annotated-video volume
 ## 6. Notes
 
 - Analysis can take several minutes on CPU; nginx `proxy_read_timeout` is 300s.
+- Latency wins (quality preserved): batched YOLO, single H.264 pass, slowmo via ffmpeg `setpts`, score before render.
 - Annotated videos persist in Docker volume `ml_output`.
 - Inference only needs `yolov8n-pose.pt` (clubhead tracking was removed from the MVP).
 - HTTPS is terminated at nginx with Let's Encrypt (`scripts/setup-ssl.sh`).
+- On a 2GB VPS, `ml-engine` `mem_limit` is `1536m` — prefer ≥4GB RAM for comfortable runs.
 
 ## 7. Disk size (why rebuilds look huge)
 
