@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy SwingLab to VPS: rsync sources (+ weights) then build & restart compose.
+# Deploy CADDYX to VPS: rsync sources (+ weights) then build & restart compose.
 # Prunes Docker build cache after deploy so disk does not balloon (PyTorch layers).
 set -euo pipefail
 

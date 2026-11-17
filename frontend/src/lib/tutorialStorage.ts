@@ -1,5 +1,5 @@
-const TUTORIAL_SEEN_KEY = 'swinglab_tutorial_seen';
-const SPOTLIGHT_SEEN_KEY = 'swinglab_analyze_spotlight_seen';
+const TUTORIAL_SEEN_KEY = 'caddyx_tutorial_seen';
+const SPOTLIGHT_SEEN_KEY = 'caddyx_analyze_spotlight_seen';
 
 export function hasSeenTutorial(): boolean {
 	if (typeof localStorage === 'undefined') return false;

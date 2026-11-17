@@ -11,6 +11,7 @@
 	</div>
 
 	<div class="land-shell land-hero__copy">
+		<p class="land-hero__brand">CADDYX</p>
 		<h1>Swing metrics from your video</h1>
 		<p class="lead land-hero__lead">
 			Upload a clip, set the club, get scored metrics.
@@ -148,13 +149,23 @@
 		animation: land-settle var(--dur-long) var(--ease-out) both;
 	}
 
-	.land-hero__copy h1 {
-		max-width: 14ch;
-		font-size: var(--text-display);
-		font-weight: var(--display-weight);
+	.land-hero__brand {
+		margin: 0 0 var(--space-sm);
+		font-family: var(--font-display);
+		font-size: clamp(2.75rem, 9vw, 5.5rem);
+		font-weight: 700;
 		letter-spacing: var(--tracking-display);
+		line-height: 0.95;
 		color: var(--color-ink);
-		line-height: 1.02;
+	}
+
+	.land-hero__copy h1 {
+		max-width: 18ch;
+		font-size: var(--text-xl);
+		font-weight: 600;
+		letter-spacing: var(--tracking-body);
+		color: var(--color-ink-2);
+		line-height: 1.25;
 		text-wrap: balance;
 		overflow-wrap: break-word;
 		min-width: 0;

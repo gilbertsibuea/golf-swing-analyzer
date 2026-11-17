@@ -8,8 +8,8 @@
     "framework": "SvelteKit 2 + Vite 6 + Tailwind 3 (frontend/package.json)"
   },
   "preserve": [
-    "SwingLab brand greens (golf, highlight)",
-    "Logo /brand/swinglab-mark.png",
+    "CADDYX brand greens (golf, highlight)",
+    "Logo /brand/caddyx-mark.png",
     "Background images /hero/golfer.jpeg and /process/driving-range.jpeg",
     "CTA gif /hero/golf-hit.gif",
     "Links /analyze and wiring",

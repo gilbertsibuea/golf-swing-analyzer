@@ -1,4 +1,4 @@
-# Golf Swing Analyzer — Visual Design Moodboard
+# CADDYX — Visual Design Moodboard
 
 ## 1. Design Direction
 

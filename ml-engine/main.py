@@ -17,7 +17,7 @@ from analyzer.exceptions import AnalysisError, ValidationError
 config.OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI(
-    title="Golf Swing Analyzer — ML Engine",
+    title="CADDYX — ML Engine",
     description="Processes golf swing videos with YOLOv8-pose pose estimation.",
     version="0.2.0",
 )

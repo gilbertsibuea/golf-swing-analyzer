@@ -14,15 +14,15 @@
 	<div class="nav__inner">
 		<a href="/" class="nav__brand">
 			<img
-				src="/brand/swinglab-mark.png"
-				alt="SwingLab"
+				src="/brand/caddyx-mark.png"
+				alt="CADDYX"
 				width="44"
 				height="44"
 				class="nav__mark"
 				decoding="async"
 			/>
 			<span class="nav__wordmark">
-				<span class="nav__swing">Swing</span><span class="nav__lab">Lab</span>
+				<span class="nav__caddy">CADDY</span><span class="nav__x">X</span>
 			</span>
 		</a>
 
@@ -94,11 +94,11 @@
 		line-height: 1;
 	}
 
-	.nav__swing {
+	.nav__caddy {
 		color: var(--color-ink);
 	}
 
-	.nav__lab {
+	.nav__x {
 		color: var(--color-accent);
 	}
 
