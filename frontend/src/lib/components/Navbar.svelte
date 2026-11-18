@@ -14,7 +14,7 @@
 	<div class="nav__inner">
 		<a href="/" class="nav__brand">
 			<img
-				src="/brand/caddyx-mark.png"
+				src="/brand/caddyx-mark.webp"
 				alt="CADDYX"
 				width="44"
 				height="44"

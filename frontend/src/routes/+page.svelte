@@ -13,9 +13,7 @@
 	<div class="land-shell land-hero__copy">
 		<p class="land-hero__brand">CADDYX</p>
 		<h1>Swing metrics from your video</h1>
-		<p class="lead land-hero__lead">
-			Upload a clip, set the club, get scored metrics.
-		</p>
+		
 		<a href="/analyze" class="land-cta">
 			<span class="land-cta__scene" aria-hidden="true">
 				<img src="/hero/golf-hit.gif" alt="" class="land-cta__gif" width="72" height="72" />
